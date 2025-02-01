@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>かなキーボード練習</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+  <style>
+    .mode {
+      text-align: right;
+    }
+    .content {
+      margin: 100px auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h2 {
+      text-align: center;
+    }
+    .keyboard {
+      display: flex;
+      flex-direction: column;
+      max-width: 1100px;
+      justify-content: center;
+      border: 1px solid #ccc;
+      padding: 10px 10px 2px;
+      border-radius: 12px;
+    }
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .key {
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      min-width: 40px;
+      margin-right: 8px;
+      font-size: 20px;
+      min-width: 70px;
+      height: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: end;
+      color: gray;
+      position: relative;
+    }
+    .key.highlight {
+      background-color: orange;
+      color: white;
+    }
+    .key.dotted::after {
+        content: "";
+        width: 2px;
+        height: 2px;
+        background-color: gray;
+        position: absolute;
+        top: 50%;
+    }
+    .key.nu_key {
+        min-width: 110px;
+    }
+    .key.double::after {
+        content: "を";
+        position: absolute;
+        top: 25%;
+        right: 5%;
+    }
+    .key span.weight {
+      font-size: 10px;
+      position: absolute;
+      top: 5px;
+      left: 10px;
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="mode">
+      初心者モード <el-switch v-model="simple_mode"></el-switch>&nbsp;&nbsp;&nbsp;
+      重さを表示 <el-switch v-model="weight_show"></el-switch>
+    </div>
+    <div class="content">
+      <h2 >現在の平仮名: {{ currentHiragana }}</h2>
+      <div class="keyboard">
+        <div class="row">
+          <div v-for="(key,i) in keys[0]" 
+              :key="key.character" 
+              :class="['key', { highlight: key.character === currentHiragana && simple_mode, nu_key: i === 0, double: i === 9 }]">
+            <span>{{ key.character }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="key" style="min-width: 75px;">→|</div>
+          <div v-for="key in keys[1]" 
+              :key="key.character" 
+              :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
+            <span>{{ key.character }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+          </div>
+          <div class="key">゛</div>
+          <div class="key">゜</div>
+        </div>
+
+        <div class="row">
+          <div class="key" style="min-width: 105px;">control</div>
+          <div v-for="(key, i) in keys[2]"
+              :key="key.character" 
+              :class="['key', {highlight: key.character === currentHiragana && simple_mode, dotted: i === 3 || i === 6}]">
+            <span>{{ key.character }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="key" style="min-width: 145px;">shift</div>
+          <div v-for="key in keys[3]" :key="key.character"
+              :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
+            <span>{{ key.character }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          keys: [
+            [{ character: 'ぬ', weight: 1 }, { character: 'ふ', weight: 1 }, { character: 'あ', weight: 1 }, { character: 'う', weight: 1 }, { character: 'え', weight: 1 }, { character: 'お', weight: 1 }, { character: 'や', weight: 1 }, { character: 'ゆ', weight: 1 }, { character: 'よ', weight: 1 }, { character: 'わ', weight: 1 }, { character: 'ほ', weight: 1 }, { character: 'へ', weight: 1 }, { character: 'ー', weight: 1 }],
+            [{ character: 'た', weight: 1 }, { character: 'て', weight: 1 }, { character: 'い', weight: 1 }, { character: 'す', weight: 1 }, { character: 'か', weight: 1 }, { character: 'ん', weight: 1 }, { character: 'な', weight: 1 }, { character: 'に', weight: 1 }, { character: 'ら', weight: 1 }, { character: 'せ', weight: 1 }],
+            [{ character: 'ち', weight: 1 }, { character: 'と', weight: 1 }, { character: 'し', weight: 1 }, { character: 'は', weight: 1 }, { character: 'き', weight: 1 }, { character: 'く', weight: 1 }, { character: 'ま', weight: 1 }, { character: 'の', weight: 1 }, { character: 'り', weight: 1 }, { character: 'れ', weight: 1 }, { character: 'け', weight: 1 }, { character: 'む', weight: 1 }],
+            [{ character: 'つ', weight: 1 }, { character: 'さ', weight: 1 }, { character: 'そ', weight: 1 }, { character: 'ひ', weight: 1 }, { character: 'こ', weight: 1 }, { character: 'み', weight: 1 }, { character: 'も', weight: 1 }, { character: 'ね', weight: 1 }, { character: 'る', weight: 1 }, { character: 'め', weight: 1 }, { character: 'ろ', weight: 1 }]
+          ],
+          currentHiragana: '',
+          simple_mode: true, // 初心者モード
+          weight_show: true, // 重さを表示
+          correctSound: new Audio('key_sound_02.mp3'),
+          errorSound: new Audio('エラー.mp3')
+        };
+      },
+      created() {
+        this.correctSound.preload = 'auto';
+        this.errorSound.preload = 'auto';
+      },
+      mounted() {
+        this.generateRandomHiragana();
+        window.addEventListener('keydown', this.handleInput);
+      },
+      beforeDestroy() {
+        window.removeEventListener('keydown', this.handleInput);
+      },
+      methods: {
+        generateRandomHiragana() {
+          const flatKeys = this.keys.flat();
+          // const randomIndex = Math.floor(Math.random() * flatKeys.length);
+          // this.currentHiragana = flatKeys[randomIndex].character;
+
+          // 計算總重さ， 將錯誤次數也納入計算
+          const totalWeight = flatKeys.reduce((sum, key) => sum + key.weight, 0);
+          // 生成一個0到總重さ之間的隨機數
+          let randomValue = Math.random() * totalWeight;
+          console.log("randomValue: ", randomValue);
+          // 遍歷平仮名並根據重さ和錯誤次數來選擇
+          for (let key of flatKeys) {
+            randomValue -= key.weight
+
+            if (randomValue <= 0) {
+              this.currentHiragana = key.character;
+              setTimeout(function(){ key.weight *= 0.7 }, 500); // 每次選中後， 減少該平仮名的重さ， 可以調整此比例
+              console.log("flatKeys: ", flatKeys);
+              return;
+            }
+          }
+        },
+        handleInput(event) {
+          // 將所有平仮名字符抽取到一個數組中
+          const allHiragana = this.keys.flat().map(k => k.character);
+          if (!allHiragana.includes("わ")) allHiragana.push("わ")
+          if (!allHiragana.includes("を")) allHiragana.push("を")
+          
+          // 只在輸入的按鍵屬於平仮名時進行比較
+          if (allHiragana.includes(event.key)) {
+            if (event.key === this.currentHiragana) {
+              this.correctSound.play()
+              this.generateRandomHiragana()
+            } else {
+              this.errorSound.play()
+              this.$message({
+                  message: '間違えました！',
+                  type: "error",
+                  offset: 100,
+                  duration: 500
+              })
+
+              // 如果輸入錯誤，增加當前平仮名的錯誤次數和重さ
+              const flatKeys = this.keys.flat();
+              const incorrectKey = flatKeys.find(k => k.character === this.currentHiragana);
+              if (incorrectKey) {
+                incorrectKey.weight += 0.5; // 錯誤後增加重さ
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
