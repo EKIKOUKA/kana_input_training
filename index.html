@@ -5,77 +5,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>かなキーボード練習</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 
-  <style>
+  <style lang="lass">
     .mode {
       text-align: right;
+
+      span {
+        cursor: pointer;
+      }
     }
+
     .content {
       margin: 100px auto 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-    h2 {
-      text-align: center;
-    }
-    .keyboard {
-      display: flex;
-      flex-direction: column;
-      max-width: 1100px;
-      justify-content: center;
-      border: 1px solid #ccc;
-      padding: 10px 10px 2px;
-      border-radius: 12px;
-    }
-    .row {
-      display: flex;
-      margin-bottom: 10px;
-    }
-    .key {
-      text-align: center;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      min-width: 40px;
-      margin-right: 8px;
-      font-size: 20px;
-      min-width: 70px;
-      height: 70px;
-      display: flex;
-      justify-content: center;
-      align-items: end;
-      color: gray;
-      position: relative;
-    }
-    .key.highlight {
-      background-color: orange;
-      color: white;
-    }
-    .key.dotted::after {
-        content: "";
-        width: 2px;
-        height: 2px;
-        background-color: gray;
-        position: absolute;
-        top: 50%;
-    }
-    .key.nu_key {
-        min-width: 110px;
-    }
-    .key.double::after {
-        content: "を";
-        position: absolute;
-        top: 25%;
-        right: 5%;
-    }
-    .key span.weight {
-      font-size: 10px;
-      position: absolute;
-      top: 5px;
-      left: 10px;
-      color: green;
+
+      h2 {
+        text-align: center;
+      }
+      .keyboard {
+        display: flex;
+        flex-direction: column;
+        width: 1180px;
+        justify-content: center;
+        border: 2px solid rgb(216, 216, 216);
+        padding: 10px 10px 2px;
+        border-radius: 12px;
+      }
+      .row {
+        display: flex;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .key {
+        text-align: center;
+        border: 2px solid rgb(216, 216, 216);
+        border-radius: 5px;
+        min-width: 40px;
+        margin-right: 8px;
+        font-size: 20px;
+        min-width: 70px;
+        height: 70px;
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        color: gray;
+        position: relative;
+
+        &.highlight {
+          background-color: orange;
+          color: white;
+        }
+
+        &.dotted::after {
+          content: "";
+          width: 2px;
+          height: 2px;
+          background-color: gray;
+          position: absolute;
+          top: 50%;
+        }
+        &.nu_key {
+          min-width: 110px;
+        }
+        &.double::after {
+          content: "を";
+          position: absolute;
+          top: 25%;
+          right: 5%;
+        }
+
+        span.weight {
+          font-size: 10px;
+          position: absolute;
+          top: 5px;
+          left: 10px;
+          color: green;
+        }
+
+        &.enter {
+          width: 129px;
+          height: 158px;
+          background: url(./enter.svg) no-repeat;
+          background-size: 100% 100%;
+          border: none;
+          position: absolute;
+          left: 1056px;
+        }
+        &.backspace {
+          background: url(./backspace.svg) bottom right no-repeat;
+          background-size: 60% 50%;
+          position: absolute;
+          right: -8px;
+        }
+      }
     }
   </style>
 </head>
@@ -83,8 +110,14 @@
 <body>
   <div id="app">
     <div class="mode">
-      初心者モード <el-switch v-model="simple_mode"></el-switch>&nbsp;&nbsp;&nbsp;
-      重さを表示 <el-switch v-model="weight_show"></el-switch>
+      <el-tooltip class="item" effect="dark" content="現在練習しているの平仮名が強調します" placement="top">
+        <span>初心者モード&nbsp;</span>
+      </el-tooltip>
+      <el-switch v-model="simple_mode"></el-switch>&nbsp;&nbsp;&nbsp;
+      <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
+        <span>重さ値を表示&nbsp;</span>
+      </el-tooltip>
+      <el-switch v-model="weight_show"></el-switch>
     </div>
     <div class="content">
       <h2 >現在の平仮名: {{ currentHiragana }}</h2>
@@ -96,10 +129,11 @@
             <span>{{ key.character }}</span>
             <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
           </div>
+          <div class="key backspace"></div>
         </div>
 
         <div class="row">
-          <div class="key" style="min-width: 75px;">→|</div>
+          <div class="key" style="min-width: 66px;">→|</div>
           <div v-for="key in keys[1]" 
               :key="key.character" 
               :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
@@ -108,6 +142,7 @@
           </div>
           <div class="key">゛</div>
           <div class="key">゜</div>
+          <div class="key enter"><img src="./enter_icon.svg" style="margin-left: 65px;margin-bottom: 5px;"/></div>
         </div>
 
         <div class="row">
@@ -121,12 +156,13 @@
         </div>
 
         <div class="row">
-          <div class="key" style="min-width: 145px;">shift</div>
+          <div class="key" style="min-width: 140px;">shift</div>
           <div v-for="key in keys[3]" :key="key.character"
               :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
             <span>{{ key.character }}</span>
             <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
           </div>
+          <div class="key" style="min-width: 122px;">shift</div>
         </div>
       </div>
     </div>
@@ -145,8 +181,8 @@
           ],
           currentHiragana: '',
           simple_mode: true, // 初心者モード
-          weight_show: true, // 重さを表示
-          correctSound: new Audio('key_sound_02.mp3'),
+          weight_show: true, // 重さ値を表示
+          correctSound: new Audio('key_sound_01.mp3'),
           errorSound: new Audio('エラー.mp3')
         };
       },
@@ -172,13 +208,14 @@
           // 生成一個0到總重さ之間的隨機數
           let randomValue = Math.random() * totalWeight;
           console.log("randomValue: ", randomValue);
-          // 遍歷平仮名並根據重さ和錯誤次數來選擇
+          let lastHiragana = this.currentHiragana; // 記錄上次的平仮名
+          // 遍歷平仮名並根據重さ値和錯誤次數來選擇
           for (let key of flatKeys) {
             randomValue -= key.weight
 
-            if (randomValue <= 0) {
+            if (randomValue <= 0 && key.character !== lastHiragana) {
               this.currentHiragana = key.character;
-              setTimeout(function(){ key.weight *= 0.7 }, 500); // 每次選中後， 減少該平仮名的重さ， 可以調整此比例
+              setTimeout(function(){ key.weight *= 0.7 }, 500); // 每次選中後， 減少該平仮名的重さ値， 可以調整此比例
               console.log("flatKeys: ", flatKeys);
               return;
             }
@@ -204,12 +241,10 @@
                   duration: 500
               })
 
-              // 如果輸入錯誤，增加當前平仮名的錯誤次數和重さ
+              // 如果輸入錯誤，增加當前平仮名的錯誤次數和重さ値
               const flatKeys = this.keys.flat();
               const incorrectKey = flatKeys.find(k => k.character === this.currentHiragana);
-              if (incorrectKey) {
-                incorrectKey.weight += 0.5; // 錯誤後增加重さ
-              }
+              if (incorrectKey) incorrectKey.weight *= 1.5; // 錯誤後增加重さ
             }
           }
         }
