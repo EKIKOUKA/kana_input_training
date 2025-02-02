@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>かなキーボード練習</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16"></script>
   <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
-  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
   <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-
-  <style lang="lass">
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  
+  <style lang="less">
     .mode {
       text-align: right;
 
@@ -58,6 +58,7 @@
 
         &.highlight {
           background-color: orange;
+          border-color: orange;
           color: white;
         }
 
@@ -85,6 +86,10 @@
           top: 5px;
           left: 10px;
           color: green;
+          overflow: hidden;
+          width: 29px;
+          text-align: left;
+          white-space: nowrap;
         }
 
         &.enter {
@@ -117,8 +122,17 @@
       <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
         <span>重さ値を表示&nbsp;</span>
       </el-tooltip>
-      <el-switch v-model="weight_show"></el-switch>
+      <el-switch v-model="weight_show"></el-switch>&nbsp;&nbsp;
+      <el-select v-model="correctSoundDefault" size="mini" placeholder="効果音" style="width: 120px;">
+        <el-option
+          v-for="item in correctSound"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
     </div>
+
     <div class="content">
       <h2 >現在の平仮名: {{ currentHiragana }}</h2>
       <div class="keyboard">
@@ -127,7 +141,7 @@
               :key="key.character" 
               :class="['key', { highlight: key.character === currentHiragana && simple_mode, nu_key: i === 0, double: i === 9 }]">
             <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
           </div>
           <div class="key backspace"></div>
         </div>
@@ -138,7 +152,7 @@
               :key="key.character" 
               :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
             <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
           </div>
           <div class="key">゛</div>
           <div class="key">゜</div>
@@ -151,7 +165,7 @@
               :key="key.character" 
               :class="['key', {highlight: key.character === currentHiragana && simple_mode, dotted: i === 3 || i === 6}]">
             <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
           </div>
         </div>
 
@@ -160,7 +174,7 @@
           <div v-for="key in keys[3]" :key="key.character"
               :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
             <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight.toFixed(3) }}</span>
+            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
           </div>
           <div class="key" style="min-width: 122px;">shift</div>
         </div>
@@ -182,12 +196,29 @@
           currentHiragana: '',
           simple_mode: true, // 初心者モード
           weight_show: true, // 重さ値を表示
-          correctSound: new Audio('key_sound_01.mp3'),
+          correctSound: [
+            {
+              label: "効果音１",
+              value: 0,
+              sound: new Audio('key_sound_01.mp3')
+            },
+            {
+              label: "効果音２",
+              value: 1,
+              sound: new Audio('key_sound_02.mp3')
+            },
+            {
+              label: "トライトーン",
+              value: 2,
+              sound: new Audio('トライトーン.mp3')
+            }
+          ],
+          correctSoundDefault: 0,
           errorSound: new Audio('エラー.mp3')
         };
       },
       created() {
-        this.correctSound.preload = 'auto';
+        this.correctSound[0].sound.preload = 'auto';
         this.errorSound.preload = 'auto';
       },
       mounted() {
@@ -207,7 +238,7 @@
           const totalWeight = flatKeys.reduce((sum, key) => sum + key.weight, 0);
           // 生成一個0到總重さ之間的隨機數
           let randomValue = Math.random() * totalWeight;
-          console.log("randomValue: ", randomValue);
+          // console.log("randomValue: ", randomValue);
           let lastHiragana = this.currentHiragana; // 記錄上次的平仮名
           // 遍歷平仮名並根據重さ値和錯誤次數來選擇
           for (let key of flatKeys) {
@@ -216,7 +247,7 @@
             if (randomValue <= 0 && key.character !== lastHiragana) {
               this.currentHiragana = key.character;
               setTimeout(function(){ key.weight *= 0.7 }, 500); // 每次選中後， 減少該平仮名的重さ値， 可以調整此比例
-              console.log("flatKeys: ", flatKeys);
+              // console.log("flatKeys: ", flatKeys);
               return;
             }
           }
@@ -230,7 +261,12 @@
           // 只在輸入的按鍵屬於平仮名時進行比較
           if (allHiragana.includes(event.key)) {
             if (event.key === this.currentHiragana) {
-              this.correctSound.play()
+              if (!this.correctSound[this.correctSoundDefault].sound.paused) {
+                // 如果聲音正在播放，則停止並重置
+                this.correctSound[this.correctSoundDefault].sound.pause();
+                this.correctSound[this.correctSoundDefault].sound.currentTime = 0;
+              }
+              this.correctSound[this.correctSoundDefault].sound.play()
               this.generateRandomHiragana()
             } else {
               this.errorSound.play()
