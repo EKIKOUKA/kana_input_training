@@ -134,21 +134,24 @@
     </div>
 
     <div class="content">
-      <h2 >現在の平仮名: {{ currentHiragana }}</h2>
+      <h2>現在の平仮名: {{ currentHiragana }}</h2>
       <div class="keyboard">
         <div class="row">
-          <div v-for="(key,i) in keys[0]" 
-              :key="key.character" 
-              :class="['key', { highlight: key.character === currentHiragana && simple_mode, nu_key: i === 0, double: i === 9 }]">
+          <div v-for="(key, i) in keys[0]"
+              :key="key.character" v-show="i !== 10"
+              :class="['key', { nu_key: i === 0, double: i === 9,
+              highlight: (key.character === currentHiragana || (currentHiragana === 'を' && key.character === 'わ')) && simple_mode }]">
             <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+            <span class="weight" v-if="weight_show">
+              {{ currentHiragana === "を" && key.character === "わ" ? keys[0][10].weight : key.weight }}
+            </span>
           </div>
           <div class="key backspace"></div>
         </div>
 
         <div class="row">
           <div class="key" style="min-width: 66px;">→|</div>
-          <div v-for="key in keys[1]" 
+          <div v-for="key in keys[1]"
               :key="key.character" 
               :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
             <span>{{ key.character }}</span>
@@ -188,7 +191,7 @@
       data() {
         return {
           keys: [
-            [{ character: 'ぬ', weight: 1 }, { character: 'ふ', weight: 1 }, { character: 'あ', weight: 1 }, { character: 'う', weight: 1 }, { character: 'え', weight: 1 }, { character: 'お', weight: 1 }, { character: 'や', weight: 1 }, { character: 'ゆ', weight: 1 }, { character: 'よ', weight: 1 }, { character: 'わ', weight: 1 }, { character: 'ほ', weight: 1 }, { character: 'へ', weight: 1 }, { character: 'ー', weight: 1 }],
+            [{ character: 'ぬ', weight: 1 }, { character: 'ふ', weight: 1 }, { character: 'あ', weight: 1 }, { character: 'う', weight: 1 }, { character: 'え', weight: 1 }, { character: 'お', weight: 1 }, { character: 'や', weight: 1 }, { character: 'ゆ', weight: 1 }, { character: 'よ', weight: 1 }, { character: 'わ', weight: 3 }, { character: 'を', weight: 5 }, { character: 'ほ', weight: 1 }, { character: 'へ', weight: 1 }, { character: 'ー', weight: 1 }],
             [{ character: 'た', weight: 1 }, { character: 'て', weight: 1 }, { character: 'い', weight: 1 }, { character: 'す', weight: 1 }, { character: 'か', weight: 1 }, { character: 'ん', weight: 1 }, { character: 'な', weight: 1 }, { character: 'に', weight: 1 }, { character: 'ら', weight: 1 }, { character: 'せ', weight: 1 }],
             [{ character: 'ち', weight: 1 }, { character: 'と', weight: 1 }, { character: 'し', weight: 1 }, { character: 'は', weight: 1 }, { character: 'き', weight: 1 }, { character: 'く', weight: 1 }, { character: 'ま', weight: 1 }, { character: 'の', weight: 1 }, { character: 'り', weight: 1 }, { character: 'れ', weight: 1 }, { character: 'け', weight: 1 }, { character: 'む', weight: 1 }],
             [{ character: 'つ', weight: 1 }, { character: 'さ', weight: 1 }, { character: 'そ', weight: 1 }, { character: 'ひ', weight: 1 }, { character: 'こ', weight: 1 }, { character: 'み', weight: 1 }, { character: 'も', weight: 1 }, { character: 'ね', weight: 1 }, { character: 'る', weight: 1 }, { character: 'め', weight: 1 }, { character: 'ろ', weight: 1 }]
