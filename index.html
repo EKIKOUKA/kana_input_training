@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>かなキーボード練習</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16"></script>
-  <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
-  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-  
+  <script src="./resource/library/vue.min.js"></script>
+  <script src="./resource/library/less.min.js"></script>
+  <script src="./resource/library/element_ui.min.js"></script>
+  <link rel="stylesheet" href="./resource/library/element_ui.css">
+
   <style lang="less">
     .mode {
       text-align: right;
@@ -95,14 +95,14 @@
         &.enter {
           width: 129px;
           height: 158px;
-          background: url(./enter.svg) no-repeat;
+          background: url(./resource/enter.svg) no-repeat;
           background-size: 100% 100%;
           border: none;
           position: absolute;
           left: 1056px;
         }
         &.backspace {
-          background: url(./backspace.svg) bottom right no-repeat;
+          background: url(./resource/backspace.svg) bottom right no-repeat;
           background-size: 60% 50%;
           position: absolute;
           right: -8px;
@@ -159,13 +159,13 @@
           </div>
           <div class="key">゛</div>
           <div class="key">゜</div>
-          <div class="key enter"><img src="./enter_icon.svg" style="margin-left: 65px;margin-bottom: 5px;"/></div>
+          <div class="key enter"><img src="./resource/enter_icon.svg" style="margin-left: 65px;margin-bottom: 5px;"/></div>
         </div>
 
         <div class="row">
           <div class="key" style="min-width: 105px;">control</div>
           <div v-for="(key, i) in keys[2]"
-              :key="key.character" 
+              :key="key.character"
               :class="['key', {highlight: key.character === currentHiragana && simple_mode, dotted: i === 3 || i === 6}]">
             <span>{{ key.character }}</span>
             <span class="weight" v-if="weight_show">{{ key.weight }}</span>
@@ -191,104 +191,103 @@
       data() {
         return {
           keys: [
-            [{ character: 'ぬ', weight: 1 }, { character: 'ふ', weight: 1 }, { character: 'あ', weight: 1 }, { character: 'う', weight: 1 }, { character: 'え', weight: 1 }, { character: 'お', weight: 1 }, { character: 'や', weight: 1 }, { character: 'ゆ', weight: 1 }, { character: 'よ', weight: 1 }, { character: 'わ', weight: 3 }, { character: 'を', weight: 5 }, { character: 'ほ', weight: 1 }, { character: 'へ', weight: 1 }, { character: 'ー', weight: 1 }],
-            [{ character: 'た', weight: 1 }, { character: 'て', weight: 1 }, { character: 'い', weight: 1 }, { character: 'す', weight: 1 }, { character: 'か', weight: 1 }, { character: 'ん', weight: 1 }, { character: 'な', weight: 1 }, { character: 'に', weight: 1 }, { character: 'ら', weight: 1 }, { character: 'せ', weight: 1 }],
-            [{ character: 'ち', weight: 1 }, { character: 'と', weight: 1 }, { character: 'し', weight: 1 }, { character: 'は', weight: 1 }, { character: 'き', weight: 1 }, { character: 'く', weight: 1 }, { character: 'ま', weight: 1 }, { character: 'の', weight: 1 }, { character: 'り', weight: 1 }, { character: 'れ', weight: 1 }, { character: 'け', weight: 1 }, { character: 'む', weight: 1 }],
-            [{ character: 'つ', weight: 1 }, { character: 'さ', weight: 1 }, { character: 'そ', weight: 1 }, { character: 'ひ', weight: 1 }, { character: 'こ', weight: 1 }, { character: 'み', weight: 1 }, { character: 'も', weight: 1 }, { character: 'ね', weight: 1 }, { character: 'る', weight: 1 }, { character: 'め', weight: 1 }, { character: 'ろ', weight: 1 }]
+            [{ character: 'ぬ', weight: 10 }, { character: 'ふ', weight: 10 }, { character: 'あ', weight: 10 }, { character: 'う', weight: 10 }, { character: 'え', weight: 10 }, { character: 'お', weight: 10 }, { character: 'や', weight: 10 }, { character: 'ゆ', weight: 10 }, { character: 'よ', weight: 10 }, { character: 'わ', weight: 30 }, { character: 'を', weight: 50 }, { character: 'ほ', weight: 10 }, { character: 'へ', weight: 10 }, { character: 'ー', weight: 10 }],
+            [{ character: 'た', weight: 10 }, { character: 'て', weight: 10 }, { character: 'い', weight: 10 }, { character: 'す', weight: 10 }, { character: 'か', weight: 10 }, { character: 'ん', weight: 10 }, { character: 'な', weight: 10 }, { character: 'に', weight: 10 }, { character: 'ら', weight: 10 }, { character: 'せ', weight: 10 }],
+            [{ character: 'ち', weight: 10 }, { character: 'と', weight: 10 }, { character: 'し', weight: 10 }, { character: 'は', weight: 10 }, { character: 'き', weight: 10 }, { character: 'く', weight: 10 }, { character: 'ま', weight: 10 }, { character: 'の', weight: 10 }, { character: 'り', weight: 10 }, { character: 'れ', weight: 10 }, { character: 'け', weight: 10 }, { character: 'む', weight: 10 }],
+            [{ character: 'つ', weight: 10 }, { character: 'さ', weight: 10 }, { character: 'そ', weight: 10 }, { character: 'ひ', weight: 10 }, { character: 'こ', weight: 10 }, { character: 'み', weight: 10 }, { character: 'も', weight: 10 }, { character: 'ね', weight: 10 }, { character: 'る', weight: 10 }, { character: 'め', weight: 10 }, { character: 'ろ', weight: 10 }]
           ],
           currentHiragana: '',
           simple_mode: true, // 初心者モード
-          weight_show: true, // 重さ値を表示
+          weight_show: false, // 重さ値を表示
           correctSound: [
             {
               label: "効果音１",
               value: 0,
-              sound: new Audio('key_sound_01.mp3')
+              sound: new Audio('./resource/key_sound_01.mp3')
             },
             {
               label: "効果音２",
               value: 1,
-              sound: new Audio('key_sound_02.mp3')
+              sound: new Audio('./resource/key_sound_02.mp3')
             },
             {
               label: "トライトーン",
               value: 2,
-              sound: new Audio('トライトーン.mp3')
+              sound: new Audio('./resource/トライトーン.mp3')
             }
           ],
           correctSoundDefault: 0,
-          errorSound: new Audio('エラー.mp3')
-        };
+          errorSound: new Audio('./resource/エラー.mp3')
+        }
       },
       created() {
-        this.correctSound[0].sound.preload = 'auto';
-        this.errorSound.preload = 'auto';
+        this.correctSound[0].sound.preload = 'auto'
+        this.errorSound.preload = 'auto'
       },
       mounted() {
-        this.generateRandomHiragana();
-        window.addEventListener('keydown', this.handleInput);
+        this.generateRandomHiragana()
+        window.addEventListener('keydown', this.handleInput)
       },
       beforeDestroy() {
-        window.removeEventListener('keydown', this.handleInput);
+        window.removeEventListener('keydown', this.handleInput)
       },
       methods: {
         generateRandomHiragana() {
-          const flatKeys = this.keys.flat();
-          // const randomIndex = Math.floor(Math.random() * flatKeys.length);
-          // this.currentHiragana = flatKeys[randomIndex].character;
+          const flatKeys = this.keys.flat()
+          // const randomIndex = Math.floor(Math.random() * flatKeys.length)
+          // this.currentHiragana = flatKeys[randomIndex].character
 
-          // 計算總重さ， 將錯誤次數也納入計算
-          const totalWeight = flatKeys.reduce((sum, key) => sum + key.weight, 0);
+          // 計算總重さ
+          const totalWeight = flatKeys.reduce((sum, key) => sum + key.weight, 0)
           // 生成一個0到總重さ之間的隨機數
-          let randomValue = Math.random() * totalWeight;
-          // console.log("randomValue: ", randomValue);
+          let randomValue = Math.random() * totalWeight
+          // console.log("randomValue: ", randomValue)
           let lastHiragana = this.currentHiragana; // 記錄上次的平仮名
-          // 遍歷平仮名並根據重さ値和錯誤次數來選擇
+          // 遍歷平仮名並根據重さ値來選擇
           for (let key of flatKeys) {
             randomValue -= key.weight
 
             if (randomValue <= 0 && key.character !== lastHiragana) {
-              this.currentHiragana = key.character;
-              setTimeout(function(){ key.weight *= 0.7 }, 500); // 每次選中後， 減少該平仮名的重さ値， 可以調整此比例
-              // console.log("flatKeys: ", flatKeys);
-              return;
+              this.currentHiragana = key.character
+              // console.log("flatKeys: ", flatKeys)
+              return
             }
           }
         },
         handleInput(event) {
           // 將所有平仮名字符抽取到一個數組中
-          const allHiragana = this.keys.flat().map(k => k.character);
-          if (!allHiragana.includes("わ")) allHiragana.push("わ")
-          if (!allHiragana.includes("を")) allHiragana.push("を")
+          const allHiragana = this.keys.flat().map(k => k.character)
           
           // 只在輸入的按鍵屬於平仮名時進行比較
           if (allHiragana.includes(event.key)) {
+            const flatKeys = this.keys.flat()
+            const currentKey = flatKeys.find(k => k.character === this.currentHiragana)
+            
             if (event.key === this.currentHiragana) {
               if (!this.correctSound[this.correctSoundDefault].sound.paused) {
                 // 如果聲音正在播放，則停止並重置
-                this.correctSound[this.correctSoundDefault].sound.pause();
-                this.correctSound[this.correctSoundDefault].sound.currentTime = 0;
+                this.correctSound[this.correctSoundDefault].sound.pause()
+                this.correctSound[this.correctSoundDefault].sound.currentTime = 0
               }
               this.correctSound[this.correctSoundDefault].sound.play()
               this.generateRandomHiragana()
+              if (currentKey) currentKey.weight *= 0.7 // 正確後減少該平仮名的重さ値
             } else {
               this.errorSound.play()
+              // 如果輸入錯誤， 增加當前平仮名的重さ値
+              if (currentKey) currentKey.weight *= 2 // 錯誤後增加重さ
+
               this.$message({
                   message: '間違えました！',
                   type: "error",
                   offset: 100,
                   duration: 500
               })
-
-              // 如果輸入錯誤，增加當前平仮名的錯誤次數和重さ値
-              const flatKeys = this.keys.flat();
-              const incorrectKey = flatKeys.find(k => k.character === this.currentHiragana);
-              if (incorrectKey) incorrectKey.weight *= 1.5; // 錯誤後增加重さ
             }
           }
         }
       }
-    });
+    })
   </script>
 </body>
 </html>
