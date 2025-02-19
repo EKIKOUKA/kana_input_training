@@ -10,8 +10,25 @@
   <link rel="stylesheet" href="./resource/library/element_ui.css">
 
   <style lang="less">
+    body {
+      overflow-y: hidden;
+      margin: 0;
+    }
+
+    .large-mode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: auto;
+      font-size: 600px;
+    }
+
     .mode {
       text-align: right;
+      margin: 8px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
 
       span {
         cursor: pointer;
@@ -73,8 +90,8 @@
         &.nu_key {
           min-width: 110px;
         }
-        &.double::after {
-          content: "を";
+        .double {
+          content: "";
           position: absolute;
           top: 25%;
           right: 5%;
@@ -114,11 +131,26 @@
 
 <body>
   <div id="app">
-    <div class="mode">
-      <el-tooltip class="item" effect="dark" content="現在練習しているの平仮名が強調します" placement="top">
+    <div v-show="largeMode" class="large-mode">
+      {{ currentHiragana }}
+    </div>
+
+    <div v-show="!largeMode" class="mode">
+      <el-tooltip class="item" effect="dark" content="平仮名 / 片仮名 を切り替える" placement="top">
+        <span>仮名タイプ&nbsp;&nbsp;</span>
+      </el-tooltip>
+      <el-radio-group v-model="kana_mode" @input="switchKanaMode" size="small">
+        <el-radio-button :label="false">平仮名</el-radio-button>
+        <el-radio-button :label="true">片仮名</el-radio-button>
+      </el-radio-group>&nbsp;&nbsp;&nbsp;
+      <el-tooltip class="item" effect="dark" content="現在練習しているの仮名が強調します" placement="top">
         <span>初心者モード&nbsp;</span>
       </el-tooltip>
       <el-switch v-model="simple_mode"></el-switch>&nbsp;&nbsp;&nbsp;
+      <el-tooltip class="item" effect="dark" content="一つ仮名で展示しもす" placement="top">
+        <span>大きいモード&nbsp;</span>
+      </el-tooltip>
+      <el-switch v-model="largeMode"></el-switch>&nbsp;&nbsp;&nbsp;
       <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
         <span>重さ値を表示&nbsp;</span>
       </el-tooltip>
@@ -133,17 +165,18 @@
       </el-select>
     </div>
 
-    <div class="content">
-      <h2>現在の平仮名: {{ currentHiragana }}</h2>
+    <div v-show="!largeMode" class="content">
+      <h2>現在の{{ kana_mode ? "片仮名" : "平仮名" }}: {{ currentHiragana }}</h2>
       <div class="keyboard">
         <div class="row">
-          <div v-for="(key, i) in keys[0]"
+          <div v-for="(key, i) in currentKeys[0]"
               :key="key.character" v-show="i !== 10"
-              :class="['key', { nu_key: i === 0, double: i === 9,
+              :class="['key', { nu_key: i === 0,
               highlight: (key.character === currentHiragana || (currentHiragana === 'を' && key.character === 'わ')) && simple_mode }]">
             <span>{{ key.character }}</span>
+            <span class="double" v-if="i === 9">{{ currentKeys[0][10].character }}</span>
             <span class="weight" v-if="weight_show">
-              {{ currentHiragana === "を" && key.character === "わ" ? keys[0][10].weight : key.weight }}
+              {{ currentHiragana === "を" && key.character === "わ" ? currentKeys[0][10].weight : key.weight }}
             </span>
           </div>
           <div class="key backspace"></div>
@@ -151,7 +184,7 @@
 
         <div class="row">
           <div class="key" style="min-width: 66px;">→|</div>
-          <div v-for="key in keys[1]"
+          <div v-for="key in currentKeys[1]"
               :key="key.character" 
               :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
             <span>{{ key.character }}</span>
@@ -164,7 +197,7 @@
 
         <div class="row">
           <div class="key" style="min-width: 105px;">control</div>
-          <div v-for="(key, i) in keys[2]"
+          <div v-for="(key, i) in currentKeys[2]"
               :key="key.character"
               :class="['key', {highlight: key.character === currentHiragana && simple_mode, dotted: i === 3 || i === 6}]">
             <span>{{ key.character }}</span>
@@ -174,7 +207,7 @@
 
         <div class="row">
           <div class="key" style="min-width: 140px;">shift</div>
-          <div v-for="key in keys[3]" :key="key.character"
+          <div v-for="key in currentKeys[3]" :key="key.character"
               :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
             <span>{{ key.character }}</span>
             <span class="weight" v-if="weight_show">{{ key.weight }}</span>
@@ -190,15 +223,24 @@
       el: '#app',
       data() {
         return {
-          keys: [
+          hiraganaKeys: [
             [{ character: 'ぬ', weight: 10 }, { character: 'ふ', weight: 10 }, { character: 'あ', weight: 10 }, { character: 'う', weight: 10 }, { character: 'え', weight: 10 }, { character: 'お', weight: 10 }, { character: 'や', weight: 10 }, { character: 'ゆ', weight: 10 }, { character: 'よ', weight: 10 }, { character: 'わ', weight: 30 }, { character: 'を', weight: 50 }, { character: 'ほ', weight: 10 }, { character: 'へ', weight: 10 }, { character: 'ー', weight: 10 }],
             [{ character: 'た', weight: 10 }, { character: 'て', weight: 10 }, { character: 'い', weight: 10 }, { character: 'す', weight: 10 }, { character: 'か', weight: 10 }, { character: 'ん', weight: 10 }, { character: 'な', weight: 10 }, { character: 'に', weight: 10 }, { character: 'ら', weight: 10 }, { character: 'せ', weight: 10 }],
             [{ character: 'ち', weight: 10 }, { character: 'と', weight: 10 }, { character: 'し', weight: 10 }, { character: 'は', weight: 10 }, { character: 'き', weight: 10 }, { character: 'く', weight: 10 }, { character: 'ま', weight: 10 }, { character: 'の', weight: 10 }, { character: 'り', weight: 10 }, { character: 'れ', weight: 10 }, { character: 'け', weight: 10 }, { character: 'む', weight: 10 }],
             [{ character: 'つ', weight: 10 }, { character: 'さ', weight: 10 }, { character: 'そ', weight: 10 }, { character: 'ひ', weight: 10 }, { character: 'こ', weight: 10 }, { character: 'み', weight: 10 }, { character: 'も', weight: 10 }, { character: 'ね', weight: 10 }, { character: 'る', weight: 10 }, { character: 'め', weight: 10 }, { character: 'ろ', weight: 10 }]
           ],
+          katakanaKeys: [
+            [{ character: 'ヌ', weight: 10 }, { character: 'フ', weight: 10 }, { character: 'ア', weight: 10 }, { character: 'ウ', weight: 10 }, { character: 'エ', weight: 10 }, { character: 'オ', weight: 10 }, { character: 'ヤ', weight: 10 }, { character: 'ユ', weight: 10 }, { character: 'ヨ', weight: 10 }, { character: 'ワ', weight: 30 }, { character: 'ヲ', weight: 50 }, { character: 'ホ', weight: 10 }, { character: 'ヘ', weight: 10 }, { character: 'ー', weight: 10 }],
+            [{ character: 'タ', weight: 10 }, { character: 'テ', weight: 10 }, { character: 'イ', weight: 10 }, { character: 'ス', weight: 10 }, { character: 'カ', weight: 10 }, { character: 'ン', weight: 10 }, { character: 'ナ', weight: 10 }, { character: 'ニ', weight: 10 }, { character: 'ラ', weight: 10 }, { character: 'セ', weight: 10 }],
+            [{ character: 'チ', weight: 10 }, { character: 'ト', weight: 10 }, { character: 'シ', weight: 10 }, { character: 'ハ', weight: 10 }, { character: 'キ', weight: 10 }, { character: 'ク', weight: 10 }, { character: 'マ', weight: 10 }, { character: 'ノ', weight: 10 }, { character: 'リ', weight: 10 }, { character: 'レ', weight: 10 }, { character: 'ケ', weight: 10 }, { character: 'ム', weight: 10 }],
+            [{ character: 'ツ', weight: 10 }, { character: 'サ', weight: 10 }, { character: 'ソ', weight: 10 }, { character: 'ヒ', weight: 10 }, { character: 'コ', weight: 10 }, { character: 'ミ', weight: 10 }, { character: 'モ', weight: 10 }, { character: 'ネ', weight: 10 }, { character: 'ル', weight: 10 }, { character: 'メ', weight: 10 }, { character: 'ロ', weight: 10 }]
+          ],
+          currentKeys: [],
           currentHiragana: '',
-          simple_mode: true, // 初心者モード
+          kana_mode: false,
+          simple_mode: false, // 初心者モード
           weight_show: false, // 重さ値を表示
+          largeMode: false,
           correctSound: [
             {
               label: "効果音１",
@@ -225,15 +267,20 @@
         this.errorSound.preload = 'auto'
       },
       mounted() {
-        this.generateRandomHiragana()
+        this.switchKanaMode()
         window.addEventListener('keydown', this.handleInput)
       },
       beforeDestroy() {
         window.removeEventListener('keydown', this.handleInput)
       },
       methods: {
+        switchKanaMode() {
+          // 根據kana_mode切換鍵盤數據
+          this.currentKeys = this.kana_mode ? this.katakanaKeys : this.hiraganaKeys;
+          this.generateRandomHiragana();
+        },
         generateRandomHiragana() {
-          const flatKeys = this.keys.flat()
+          const flatKeys = this.currentKeys.flat()
           // const randomIndex = Math.floor(Math.random() * flatKeys.length)
           // this.currentHiragana = flatKeys[randomIndex].character
 
@@ -243,7 +290,7 @@
           let randomValue = Math.random() * totalWeight
           // console.log("randomValue: ", randomValue)
           let lastHiragana = this.currentHiragana; // 記錄上次的平仮名
-          // 遍歷平仮名並根據重さ値來選擇
+          // 遍歷仮名並根據重さ値來選擇
           for (let key of flatKeys) {
             randomValue -= key.weight
 
@@ -255,27 +302,34 @@
           }
         },
         handleInput(event) {
-          // 將所有平仮名字符抽取到一個數組中
-          const allHiragana = this.keys.flat().map(k => k.character)
+          if (event.key === "Escape" && this.largeMode) this.largeMode = false 
           
-          // 只在輸入的按鍵屬於平仮名時進行比較
+          // 將所有仮名字符抽取到一個數組中
+          const allHiragana = this.hiraganaKeys.flat().map(k => k.character)
+          
+          // 只在輸入的按鍵屬於仮名時進行比較
           if (allHiragana.includes(event.key)) {
-            const flatKeys = this.keys.flat()
-            const currentKey = flatKeys.find(k => k.character === this.currentHiragana)
+            let currentKey = this.currentKeys.flat().find(k => k.character === this.currentHiragana)
+
+            // kana_mode
+            let index = this.hiraganaKeys.flat().findIndex(k => k.character === event.key)
+            let char_hiraToKana = this.katakanaKeys.flat()[index].character
             
-            if (event.key === this.currentHiragana) {
+            const isCorrectInput = this.kana_mode ? char_hiraToKana === this.currentHiragana : event.key === this.currentHiragana
+            if (isCorrectInput) {
               if (!this.correctSound[this.correctSoundDefault].sound.paused) {
                 // 如果聲音正在播放，則停止並重置
                 this.correctSound[this.correctSoundDefault].sound.pause()
                 this.correctSound[this.correctSoundDefault].sound.currentTime = 0
               }
               this.correctSound[this.correctSoundDefault].sound.play()
+              
+              currentKey.weight *= 0.7 // 正確後減少該仮名的重さ値
               this.generateRandomHiragana()
-              if (currentKey) currentKey.weight *= 0.7 // 正確後減少該平仮名的重さ値
             } else {
               this.errorSound.play()
-              // 如果輸入錯誤， 增加當前平仮名的重さ値
-              if (currentKey) currentKey.weight *= 2 // 錯誤後增加重さ
+              // 如果輸入錯誤， 增加當前仮名的重さ値
+              currentKey.weight *= 2 // 錯誤後增加重さ
 
               this.$message({
                   message: '間違えました！',
