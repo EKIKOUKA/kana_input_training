@@ -10,6 +10,13 @@
   <link rel="stylesheet" href="./resource/library/element_ui.css">
 
   <style lang="less">
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity .35s;
+    }
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+      opacity: 0;
+    }
+
     body {
       overflow-y: hidden;
       margin: 0;
@@ -24,11 +31,19 @@
     }
 
     .mode {
-      text-align: right;
       margin: 8px;
       display: flex;
       justify-content: flex-end;
-      align-items: center;
+
+      .option {
+        margin-left: 12px;
+        display: flex;
+        align-items: center;
+
+        .text {
+          margin-right: 5px;
+        }
+      }
 
       span {
         cursor: pointer;
@@ -36,7 +51,7 @@
     }
 
     .content {
-      margin: 100px auto 0;
+      margin: 150px auto 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -131,90 +146,101 @@
 
 <body>
   <div id="app">
-    <div v-show="largeMode" class="large-mode">
-      {{ currentHiragana }}
-    </div>
+    <transition name="fade">
+      <div v-show="largeMode" class="large-mode">
+        {{ currentHiragana }}
+      </div>
+    </transition>
 
     <div v-show="!largeMode" class="mode">
-      <el-tooltip class="item" effect="dark" content="平仮名 / 片仮名 を切り替える" placement="top">
-        <span>仮名タイプ&nbsp;&nbsp;</span>
-      </el-tooltip>
-      <el-radio-group v-model="kana_mode" @input="switchKanaMode" size="small">
-        <el-radio-button :label="false">平仮名</el-radio-button>
-        <el-radio-button :label="true">片仮名</el-radio-button>
-      </el-radio-group>&nbsp;&nbsp;&nbsp;
-      <el-tooltip class="item" effect="dark" content="現在練習しているの仮名が強調します" placement="top">
-        <span>初心者モード&nbsp;</span>
-      </el-tooltip>
-      <el-switch v-model="simple_mode"></el-switch>&nbsp;&nbsp;&nbsp;
-      <el-tooltip class="item" effect="dark" content="一つ仮名で展示しもす" placement="top">
-        <span>大きいモード&nbsp;</span>
-      </el-tooltip>
-      <el-switch v-model="largeMode"></el-switch>&nbsp;&nbsp;&nbsp;
-      <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
-        <span>重さ値を表示&nbsp;</span>
-      </el-tooltip>
-      <el-switch v-model="weight_show"></el-switch>&nbsp;&nbsp;
-      <el-select v-model="correctSoundDefault" size="mini" placeholder="効果音" style="width: 120px;">
-        <el-option
-          v-for="item in correctSound"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
+      <div class="option">
+        <el-tooltip class="item" effect="dark" content="平仮名 / 片仮名 を切り替える" placement="top">
+          <span class="text">仮名タイプ</span>
+        </el-tooltip>
+        <el-radio-group v-model="kana_mode" @input="switchKanaMode" size="small">
+          <el-radio-button :label="false">平仮名</el-radio-button>
+          <el-radio-button :label="true">片仮名</el-radio-button>
+        </el-radio-group>
+      </div>
+      <div class="option">
+        <el-tooltip class="item" effect="dark" content="現在練習しているの仮名が強調します" placement="top">
+          <span class="text">初心者モード</span>
+        </el-tooltip>
+        <el-switch v-model="simple_mode"></el-switch>       
+      </div>
+      <div class="option">
+        <el-tooltip class="item" effect="dark" content="一つ仮名で展示しもす" placement="top">
+          <span class="text">巨大モード</span>
+        </el-tooltip>
+        <el-switch v-model="largeMode"></el-switch>
+      </div>
+      <div class="option">
+        <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
+          <span class="text">重さ値を表示</span>
+        </el-tooltip>
+        <el-switch v-model="weight_show"></el-switch>
+      </div>
+      <div class="option">
+        <el-select v-model="correctSoundDefault" size="mini" placeholder="効果音" style="width: 120px;">
+          <el-option
+            v-for="item in correctSound"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </div>
     </div>
 
     <div v-show="!largeMode" class="content">
       <h2>現在の{{ kana_mode ? "片仮名" : "平仮名" }}: {{ currentHiragana }}</h2>
-      <div class="keyboard">
-        <div class="row">
-          <div v-for="(key, i) in currentKeys[0]"
-              :key="key.character" v-show="i !== 10"
-              :class="['key', { nu_key: i === 0,
-              highlight: (key.character === currentHiragana || (currentHiragana === 'を' && key.character === 'わ')) && simple_mode }]">
-            <span>{{ key.character }}</span>
-            <span class="double" v-if="i === 9">{{ currentKeys[0][10].character }}</span>
-            <span class="weight" v-if="weight_show">
-              {{ currentHiragana === "を" && key.character === "わ" ? currentKeys[0][10].weight : key.weight }}
-            </span>
+      <transition name="fade1"> 
+        <div class="keyboard">
+          <div class="row">
+            <div v-for="(key, i) in currentKeys[0]" :key="key.character" v-show="i !== 10"
+                :class="['key', { nu_key: i === 0,
+                highlight: (key.character === currentHiragana || 
+                  (currentHiragana === 'を' && key.character === 'わ') || 
+                  (currentHiragana === 'ヲ' && key.character === 'ワ')) && simple_mode }]">
+              <span>{{ key.character }}</span>
+              <span class="double" v-if="i === 9">{{ currentKeys[0][10].character }}</span>
+              <span class="weight" v-if="weight_show">
+                {{ (currentHiragana === "を" && key.character === "わ") || 
+                  (currentHiragana === 'ヲ' && key.character === 'ワ') ? currentKeys[0][10].weight : key.weight }}
+              </span>
+            </div>
+            <div class="key backspace"></div>
           </div>
-          <div class="key backspace"></div>
-        </div>
-
-        <div class="row">
-          <div class="key" style="min-width: 66px;">→|</div>
-          <div v-for="key in currentKeys[1]"
-              :key="key.character" 
-              :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
-            <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+          <div class="row">
+            <div class="key" style="min-width: 66px;">→|</div>
+            <div v-for="key in currentKeys[1]" :key="key.character" 
+                :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
+              <span>{{ key.character }}</span>
+              <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+            </div>
+            <div class="key">゛</div>
+            <div class="key">゜</div>
+            <div class="key enter"><img src="./resource/enter_icon.svg" style="margin-left: 65px;margin-bottom: 5px;"/></div>
           </div>
-          <div class="key">゛</div>
-          <div class="key">゜</div>
-          <div class="key enter"><img src="./resource/enter_icon.svg" style="margin-left: 65px;margin-bottom: 5px;"/></div>
-        </div>
-
-        <div class="row">
-          <div class="key" style="min-width: 105px;">control</div>
-          <div v-for="(key, i) in currentKeys[2]"
-              :key="key.character"
-              :class="['key', {highlight: key.character === currentHiragana && simple_mode, dotted: i === 3 || i === 6}]">
-            <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+          <div class="row">
+            <div class="key" style="min-width: 105px;">control</div>
+            <div v-for="(key, i) in currentKeys[2]" :key="key.character"
+                :class="['key', {highlight: key.character === currentHiragana && simple_mode, dotted: i === 3 || i === 6}]">
+              <span>{{ key.character }}</span>
+              <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="key" style="min-width: 140px;">shift</div>
+            <div v-for="key in currentKeys[3]" :key="key.character"
+                :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
+              <span>{{ key.character }}</span>
+              <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+            </div>
+            <div class="key" style="min-width: 122px;">shift</div>
           </div>
         </div>
-
-        <div class="row">
-          <div class="key" style="min-width: 140px;">shift</div>
-          <div v-for="key in currentKeys[3]" :key="key.character"
-              :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
-            <span>{{ key.character }}</span>
-            <span class="weight" v-if="weight_show">{{ key.weight }}</span>
-          </div>
-          <div class="key" style="min-width: 122px;">shift</div>
-        </div>
-      </div>
+      </transition>
     </div>
   </div>
 
@@ -237,10 +263,10 @@
           ],
           currentKeys: [],
           currentHiragana: '',
-          kana_mode: false,
+          kana_mode: true, // 片仮名モード
           simple_mode: false, // 初心者モード
           weight_show: false, // 重さ値を表示
-          largeMode: false,
+          largeMode: false, // 巨大モード
           correctSound: [
             {
               label: "効果音１",
@@ -275,7 +301,7 @@
       },
       methods: {
         switchKanaMode() {
-          // 根據kana_mode切換鍵盤數據
+          // kana_modeに応じて配列の値を切り替える
           this.currentKeys = this.kana_mode ? this.katakanaKeys : this.hiraganaKeys;
           this.generateRandomHiragana();
         },
@@ -284,13 +310,13 @@
           // const randomIndex = Math.floor(Math.random() * flatKeys.length)
           // this.currentHiragana = flatKeys[randomIndex].character
 
-          // 計算總重さ
+          // 総重さを計算
           const totalWeight = flatKeys.reduce((sum, key) => sum + key.weight, 0)
-          // 生成一個0到總重さ之間的隨機數
+          // 0から総重みまでの乱数を生成する
           let randomValue = Math.random() * totalWeight
           // console.log("randomValue: ", randomValue)
-          let lastHiragana = this.currentHiragana; // 記錄上次的平仮名
-          // 遍歷仮名並根據重さ値來選擇
+          let lastHiragana = this.currentHiragana; // 最後の平仮名を記録する
+          // 仮名のループ処理と重みに基づく選択
           for (let key of flatKeys) {
             randomValue -= key.weight
 
@@ -304,10 +330,10 @@
         handleInput(event) {
           if (event.key === "Escape" && this.largeMode) this.largeMode = false 
           
-          // 將所有仮名字符抽取到一個數組中
+          // 全ての仮名文字を一つの配列に抽出する
           const allHiragana = this.hiraganaKeys.flat().map(k => k.character)
           
-          // 只在輸入的按鍵屬於仮名時進行比較
+          // キー入力が仮名の場合のみ比較する
           if (allHiragana.includes(event.key)) {
             let currentKey = this.currentKeys.flat().find(k => k.character === this.currentHiragana)
 
@@ -318,21 +344,21 @@
             const isCorrectInput = this.kana_mode ? char_hiraToKana === this.currentHiragana : event.key === this.currentHiragana
             if (isCorrectInput) {
               if (!this.correctSound[this.correctSoundDefault].sound.paused) {
-                // 如果聲音正在播放，則停止並重置
+                // 効果音が再生されている場合は、停止してリセットして
                 this.correctSound[this.correctSoundDefault].sound.pause()
                 this.correctSound[this.correctSoundDefault].sound.currentTime = 0
               }
               this.correctSound[this.correctSoundDefault].sound.play()
               
-              currentKey.weight *= 0.7 // 正確後減少該仮名的重さ値
+              currentKey.weight *= 0.7 // 正しい場合は、仮名の重みを減らす
               this.generateRandomHiragana()
             } else {
               this.errorSound.play()
-              // 如果輸入錯誤， 增加當前仮名的重さ値
-              currentKey.weight *= 2 // 錯誤後增加重さ
+              // 入力が間違っている場合は、現在の仮名の重みを増やします
+              currentKey.weight *= 2 // 間違った後に重みを追加
 
               this.$message({
-                  message: '間違えました！',
+                  message: '間違いました！',
                   type: "error",
                   offset: 100,
                   duration: 500
