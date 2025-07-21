@@ -1,373 +1,376 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>かなキーボード練習</title>
-  <script src="./resource/library/vue.min.js"></script>
-  <script src="./resource/library/less.min.js"></script>
-  <script src="./resource/library/element_ui.min.js"></script>
-  <link rel="stylesheet" href="./resource/library/element_ui.css">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="かなキーボード練習">
+        <title>かなキーボード練習</title>
+        <script src="./resource/library/vue.min.js"></script>
+        <script src="./resource/library/less.min.js"></script>
+        <script src="./resource/library/element_ui.min.js"></script>
+        <link rel="stylesheet" href="./resource/library/element_ui.css">
 
-  <style lang="less">
-    .fade-enter-active, .fade-leave-active {
-      transition: opacity .35s;
-    }
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-      opacity: 0;
-    }
+        <style lang="less">
+            .fade-enter-active, .fade-leave-active {
+                transition: opacity .35s;
+            }
 
-    body {
-      overflow-y: hidden;
-      margin: 0;
-    }
+            .fade-enter, .fade-leave-to {
+                opacity: 0;
+            }
 
-    .large-mode {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: auto;
-      font-size: 600px;
-    }
+            body {
+                overflow-y: hidden;
+                margin: 0;
+            }
 
-    .mode {
-      margin: 8px;
-      display: flex;
-      justify-content: flex-end;
+            .large-mode {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: auto;
+                font-size: 600px;
+            }
 
-      .option {
-        margin-left: 12px;
-        display: flex;
-        align-items: center;
+            .mode {
+                margin: 8px;
+                display: flex;
+                justify-content: flex-end;
 
-        .text {
-          margin-right: 5px;
-        }
-      }
+                .option {
+                    margin-left: 12px;
+                    display: flex;
+                    align-items: center;
 
-      span {
-        cursor: pointer;
-      }
-    }
+                    .text {
+                        margin-right: 5px;
+                    }
+                }
 
-    .content {
-      margin: 150px auto 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+                span {
+                    cursor: pointer;
+                }
+            }
 
-      h2 {
-        text-align: center;
-      }
-      .keyboard {
-        display: flex;
-        flex-direction: column;
-        width: 1180px;
-        justify-content: center;
-        border: 2px solid rgb(216, 216, 216);
-        padding: 10px 10px 2px;
-        border-radius: 12px;
-      }
-      .row {
-        display: flex;
-        margin-bottom: 10px;
-        position: relative;
-      }
-      .key {
-        text-align: center;
-        border: 2px solid rgb(216, 216, 216);
-        border-radius: 5px;
-        min-width: 40px;
-        margin-right: 8px;
-        font-size: 20px;
-        min-width: 70px;
-        height: 70px;
-        display: flex;
-        justify-content: center;
-        align-items: end;
-        color: gray;
-        position: relative;
+            .content {
+                margin: 150px auto 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
 
-        &.highlight {
-          background-color: orange;
-          border-color: orange;
-          color: white;
-        }
+                h2 {
+                    text-align: center;
+                }
 
-        &.dotted::after {
-          content: "";
-          width: 2px;
-          height: 2px;
-          background-color: gray;
-          position: absolute;
-          top: 50%;
-        }
-        &.nu_key {
-          min-width: 110px;
-        }
-        .double {
-          content: "";
-          position: absolute;
-          top: 25%;
-          right: 5%;
-        }
+                .keyboard {
+                    display: flex;
+                    flex-direction: column;
+                    width: 1180px;
+                    justify-content: center;
+                    border: 2px solid rgb(216, 216, 216);
+                    padding: 10px 10px 2px;
+                    border-radius: 12px;
+                }
 
-        span.weight {
-          font-size: 10px;
-          position: absolute;
-          top: 5px;
-          left: 10px;
-          color: green;
-          overflow: hidden;
-          width: 29px;
-          text-align: left;
-          white-space: nowrap;
-        }
+                .row {
+                    display: flex;
+                    margin-bottom: 10px;
+                    position: relative;
+                }
 
-        &.enter {
-          width: 129px;
-          height: 158px;
-          background: url(./resource/enter.svg) no-repeat;
-          background-size: 100% 100%;
-          border: none;
-          position: absolute;
-          left: 1056px;
-        }
-        &.backspace {
-          background: url(./resource/backspace.svg) bottom right no-repeat;
-          background-size: 60% 50%;
-          position: absolute;
-          right: -8px;
-        }
-      }
-    }
-  </style>
-</head>
+                .key {
+                    text-align: center;
+                    border: 2px solid rgb(216, 216, 216);
+                    border-radius: 5px;
+                    margin-right: 8px;
+                    font-size: 20px;
+                    min-width: 70px;
+                    height: 70px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: end;
+                    color: gray;
+                    position: relative;
 
-<body>
-  <div id="app">
-    <transition name="fade">
-      <div v-show="largeMode" class="large-mode">
-        {{ currentHiragana }}
-      </div>
-    </transition>
+                    &.highlight {
+                        background-color: #409EFF;
+                        border-color: #409EFF;
+                        color: white;
+                    }
 
-    <div v-show="!largeMode" class="mode">
-      <div class="option">
-        <el-tooltip class="item" effect="dark" content="平仮名 / 片仮名 を切り替える" placement="top">
-          <span class="text">仮名タイプ</span>
-        </el-tooltip>
-        <el-radio-group v-model="kana_mode" @input="switchKanaMode" size="small">
-          <el-radio-button :label="false">平仮名</el-radio-button>
-          <el-radio-button :label="true">片仮名</el-radio-button>
-        </el-radio-group>
-      </div>
-      <div class="option">
-        <el-tooltip class="item" effect="dark" content="現在練習しているの仮名が強調します" placement="top">
-          <span class="text">初心者モード</span>
-        </el-tooltip>
-        <el-switch v-model="simple_mode"></el-switch>       
-      </div>
-      <div class="option">
-        <el-tooltip class="item" effect="dark" content="一つ仮名で展示しもす" placement="top">
-          <span class="text">巨大モード</span>
-        </el-tooltip>
-        <el-switch v-model="largeMode"></el-switch>
-      </div>
-      <div class="option">
-        <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
-          <span class="text">重さ値を表示</span>
-        </el-tooltip>
-        <el-switch v-model="weight_show"></el-switch>
-      </div>
-      <div class="option">
-        <el-select v-model="correctSoundDefault" size="mini" placeholder="効果音" style="width: 120px;">
-          <el-option
-            v-for="item in correctSound"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </div>
-    </div>
+                    &.dotted::after {
+                        content: "";
+                        width: 2px;
+                        height: 2px;
+                        background-color: gray;
+                        position: absolute;
+                        top: 50%;
+                    }
 
-    <div v-show="!largeMode" class="content">
-      <h2>現在の{{ kana_mode ? "片仮名" : "平仮名" }}: {{ currentHiragana }}</h2>
-      <transition name="fade1"> 
-        <div class="keyboard">
-          <div class="row">
-            <div v-for="(key, i) in currentKeys[0]" :key="key.character" v-show="i !== 10"
-                :class="['key', { nu_key: i === 0,
-                highlight: (key.character === currentHiragana || 
-                  (currentHiragana === 'を' && key.character === 'わ') || 
-                  (currentHiragana === 'ヲ' && key.character === 'ワ')) && simple_mode }]">
-              <span>{{ key.character }}</span>
-              <span class="double" v-if="i === 9">{{ currentKeys[0][10].character }}</span>
-              <span class="weight" v-if="weight_show">
-                {{ (currentHiragana === "を" && key.character === "わ") || 
-                  (currentHiragana === 'ヲ' && key.character === 'ワ') ? currentKeys[0][10].weight : key.weight }}
-              </span>
+                    &.nu_key {
+                        min-width: 110px;
+                    }
+
+                    .double {
+                        content: "";
+                        position: absolute;
+                        top: 25%;
+                        right: 5%;
+                    }
+
+                    span.weight {
+                        font-size: 10px;
+                        position: absolute;
+                        top: 5px;
+                        left: 10px;
+                        color: green;
+                        overflow: hidden;
+                        width: 29px;
+                        text-align: left;
+                        white-space: nowrap;
+                    }
+
+                    &.enter {
+                        width: 129px;
+                        height: 158px;
+                        background: url(./resource/enter.svg) no-repeat;
+                        background-size: 100% 100%;
+                        border: none;
+                        position: absolute;
+                        left: 1056px;
+                    }
+
+                    &.backspace {
+                        background: url(./resource/backspace.svg) bottom right no-repeat;
+                        background-size: 60% 50%;
+                        position: absolute;
+                        right: -8px;
+                    }
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app">
+            <transition name="fade">
+                <div v-show="largeMode" class="large-mode">{{ currentKana }}</div>
+            </transition>
+
+            <div v-show="!largeMode" class="mode">
+                <div class="option">
+                    <el-tooltip class="item" effect="dark" content="平仮名 / 片仮名 を切り替える" placement="top">
+                        <span class="text">仮名タイプ</span>
+                    </el-tooltip>
+                    <el-radio-group v-model="kana_mode" @input="switchKanaMode" size="small">
+                        <el-radio-button :label="false">平仮名</el-radio-button>
+                        <el-radio-button :label="true">片仮名</el-radio-button>
+                    </el-radio-group>
+                </div>
+                <div class="option">
+                    <el-tooltip class="item" effect="dark" content="現在練習しているの仮名が強調します" placement="top">
+                        <span class="text">初心者モード</span>
+                    </el-tooltip>
+                    <el-switch v-model="simple_mode"></el-switch>
+                </div>
+                <div class="option">
+                    <el-tooltip class="item" effect="dark" content="一つ仮名で展示しもす" placement="top">
+                        <span class="text">巨大モード</span>
+                    </el-tooltip>
+                    <el-switch v-model="largeMode"></el-switch>
+                </div>
+                <div class="option">
+                    <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
+                        <span class="text">重さ値を表示</span>
+                    </el-tooltip>
+                    <el-switch v-model="weight_show"></el-switch>
+                </div>
+                <div class="option">
+                    <el-select v-model="correctSoundDefault" size="mini" placeholder="効果音" style="width: 120px;">
+                        <el-option
+                            v-for="item in correctSound"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
             </div>
-            <div class="key backspace"></div>
-          </div>
-          <div class="row">
-            <div class="key" style="min-width: 66px;">→|</div>
-            <div v-for="key in currentKeys[1]" :key="key.character" 
-                :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
-              <span>{{ key.character }}</span>
-              <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+
+            <div v-show="!largeMode" class="content">
+                <h2>現在の{{ kana_mode ? "片仮名" : "平仮名" }}: {{ currentKana }}</h2>
+                <transition name="fade1">
+                    <div class="keyboard">
+                        <div class="row">
+                            <div v-for="(key, i) in currentKeys[0]" :key="key.character" v-show="i !== 10" :class="['key', { nu_key: i === 0,
+                                highlight: (key.character === currentKana ||
+                                  (currentKana === 'を' && key.character === 'わ') ||
+                                  (currentKana === 'ヲ' && key.character === 'ワ')) && simple_mode }]">
+                                <span>{{ key.character }}</span>
+                                <span class="double" v-if="i === 9">{{ currentKeys[0][10].character }}</span>
+                                <span class="weight" v-if="weight_show">
+                                    {{ (currentKana === "を" && key.character === "わ") ||
+                                        (currentKana === 'ヲ' && key.character === 'ワ') ? currentKeys[0][10].weight : key.weight }}
+                                </span>
+                            </div>
+                            <div class="key backspace"></div>
+                        </div>
+                        <div class="row">
+                            <div class="key" style="min-width: 66px;">→|</div>
+                            <div v-for="key in currentKeys[1]" :key="key.character"
+                                 :class="['key', { highlight: key.character === currentKana && simple_mode }]">
+                                <span>{{ key.character }}</span>
+                                <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+                            </div>
+                            <div class="key">゛</div>
+                            <div class="key">゜</div>
+                            <div class="key enter">
+                                <img src="./resource/enter_icon.svg" style="margin-left: 65px;margin-bottom: 5px;"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="key" style="min-width: 105px;">control</div>
+                            <div v-for="(key, i) in currentKeys[2]" :key="key.character"
+                                 :class="['key', {highlight: key.character === currentKana && simple_mode, dotted: i === 3 || i === 6}]">
+                                <span>{{ key.character }}</span>
+                                <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="key" style="min-width: 140px;">shift</div>
+                            <div v-for="key in currentKeys[3]" :key="key.character" :class="['key', { highlight: key.character === currentKana && simple_mode }]">
+                                <span>{{ key.character }}</span>
+                                <span class="weight" v-if="weight_show">{{ key.weight }}</span>
+                            </div>
+                            <div class="key" style="min-width: 122px;">shift</div>
+                        </div>
+                    </div>
+                </transition>
             </div>
-            <div class="key">゛</div>
-            <div class="key">゜</div>
-            <div class="key enter"><img src="./resource/enter_icon.svg" style="margin-left: 65px;margin-bottom: 5px;"/></div>
-          </div>
-          <div class="row">
-            <div class="key" style="min-width: 105px;">control</div>
-            <div v-for="(key, i) in currentKeys[2]" :key="key.character"
-                :class="['key', {highlight: key.character === currentHiragana && simple_mode, dotted: i === 3 || i === 6}]">
-              <span>{{ key.character }}</span>
-              <span class="weight" v-if="weight_show">{{ key.weight }}</span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="key" style="min-width: 140px;">shift</div>
-            <div v-for="key in currentKeys[3]" :key="key.character"
-                :class="['key', { highlight: key.character === currentHiragana && simple_mode }]">
-              <span>{{ key.character }}</span>
-              <span class="weight" v-if="weight_show">{{ key.weight }}</span>
-            </div>
-            <div class="key" style="min-width: 122px;">shift</div>
-          </div>
         </div>
-      </transition>
-    </div>
-  </div>
 
-  <script>
-    new Vue({
-      el: '#app',
-      data() {
-        return {
-          hiraganaKeys: [
-            [{ character: 'ぬ', weight: 10 }, { character: 'ふ', weight: 10 }, { character: 'あ', weight: 10 }, { character: 'う', weight: 10 }, { character: 'え', weight: 10 }, { character: 'お', weight: 10 }, { character: 'や', weight: 10 }, { character: 'ゆ', weight: 10 }, { character: 'よ', weight: 10 }, { character: 'わ', weight: 30 }, { character: 'を', weight: 50 }, { character: 'ほ', weight: 10 }, { character: 'へ', weight: 10 }, { character: 'ー', weight: 10 }],
-            [{ character: 'た', weight: 10 }, { character: 'て', weight: 10 }, { character: 'い', weight: 10 }, { character: 'す', weight: 10 }, { character: 'か', weight: 10 }, { character: 'ん', weight: 10 }, { character: 'な', weight: 10 }, { character: 'に', weight: 10 }, { character: 'ら', weight: 10 }, { character: 'せ', weight: 10 }],
-            [{ character: 'ち', weight: 10 }, { character: 'と', weight: 10 }, { character: 'し', weight: 10 }, { character: 'は', weight: 10 }, { character: 'き', weight: 10 }, { character: 'く', weight: 10 }, { character: 'ま', weight: 10 }, { character: 'の', weight: 10 }, { character: 'り', weight: 10 }, { character: 'れ', weight: 10 }, { character: 'け', weight: 10 }, { character: 'む', weight: 10 }],
-            [{ character: 'つ', weight: 10 }, { character: 'さ', weight: 10 }, { character: 'そ', weight: 10 }, { character: 'ひ', weight: 10 }, { character: 'こ', weight: 10 }, { character: 'み', weight: 10 }, { character: 'も', weight: 10 }, { character: 'ね', weight: 10 }, { character: 'る', weight: 10 }, { character: 'め', weight: 10 }, { character: 'ろ', weight: 10 }]
-          ],
-          katakanaKeys: [
-            [{ character: 'ヌ', weight: 10 }, { character: 'フ', weight: 10 }, { character: 'ア', weight: 10 }, { character: 'ウ', weight: 10 }, { character: 'エ', weight: 10 }, { character: 'オ', weight: 10 }, { character: 'ヤ', weight: 10 }, { character: 'ユ', weight: 10 }, { character: 'ヨ', weight: 10 }, { character: 'ワ', weight: 30 }, { character: 'ヲ', weight: 50 }, { character: 'ホ', weight: 10 }, { character: 'ヘ', weight: 10 }, { character: 'ー', weight: 10 }],
-            [{ character: 'タ', weight: 10 }, { character: 'テ', weight: 10 }, { character: 'イ', weight: 10 }, { character: 'ス', weight: 10 }, { character: 'カ', weight: 10 }, { character: 'ン', weight: 10 }, { character: 'ナ', weight: 10 }, { character: 'ニ', weight: 10 }, { character: 'ラ', weight: 10 }, { character: 'セ', weight: 10 }],
-            [{ character: 'チ', weight: 10 }, { character: 'ト', weight: 10 }, { character: 'シ', weight: 10 }, { character: 'ハ', weight: 10 }, { character: 'キ', weight: 10 }, { character: 'ク', weight: 10 }, { character: 'マ', weight: 10 }, { character: 'ノ', weight: 10 }, { character: 'リ', weight: 10 }, { character: 'レ', weight: 10 }, { character: 'ケ', weight: 10 }, { character: 'ム', weight: 10 }],
-            [{ character: 'ツ', weight: 10 }, { character: 'サ', weight: 10 }, { character: 'ソ', weight: 10 }, { character: 'ヒ', weight: 10 }, { character: 'コ', weight: 10 }, { character: 'ミ', weight: 10 }, { character: 'モ', weight: 10 }, { character: 'ネ', weight: 10 }, { character: 'ル', weight: 10 }, { character: 'メ', weight: 10 }, { character: 'ロ', weight: 10 }]
-          ],
-          currentKeys: [],
-          currentHiragana: '',
-          kana_mode: true, // 片仮名モード
-          simple_mode: true, // 初心者モード
-          weight_show: false, // 重さ値を表示
-          largeMode: false, // 巨大モード
-          correctSound: [
-            {
-              label: "効果音１",
-              value: 0,
-              sound: new Audio('./resource/key_sound_01.mp3')
-            },
-            {
-              label: "効果音２",
-              value: 1,
-              sound: new Audio('./resource/key_sound_02.mp3')
-            },
-            {
-              label: "トライトーン",
-              value: 2,
-              sound: new Audio('./resource/トライトーン.mp3')
-            }
-          ],
-          correctSoundDefault: 0,
-          errorSound: new Audio('./resource/エラー.mp3')
-        }
-      },
-      created() {
-        this.correctSound[0].sound.preload = 'auto'
-        this.errorSound.preload = 'auto'
-      },
-      mounted() {
-        this.switchKanaMode()
-        window.addEventListener('keydown', this.handleInput)
-      },
-      beforeDestroy() {
-        window.removeEventListener('keydown', this.handleInput)
-      },
-      methods: {
-        switchKanaMode() {
-          // kana_modeに応じて配列の値を切り替える
-          this.currentKeys = this.kana_mode ? this.katakanaKeys : this.hiraganaKeys;
-          this.generateRandomHiragana();
-        },
-        generateRandomHiragana() {
-          const flatKeys = this.currentKeys.flat()
-          // const randomIndex = Math.floor(Math.random() * flatKeys.length)
-          // this.currentHiragana = flatKeys[randomIndex].character
+        <script>
+            new Vue({
+                el: '#app',
+                data() {
+                    return {
+                        hiraganaKeys: [
+                            [{ character: 'ぬ', weight: 100, initialWeight: 100 }, { character: 'ふ', weight: 10, initialWeight: 10 }, { character: 'あ', weight: 10, initialWeight: 10 }, { character: 'う', weight: 10, initialWeight: 10 }, { character: 'え', weight: 50, initialWeight: 50 }, { character: 'お', weight: 100, initialWeight: 100 }, { character: 'や', weight: 50, initialWeight: 50 }, { character: 'ゆ', weight: 50, initialWeight: 50 }, { character: 'よ', weight: 100, initialWeight: 100 }, { character: 'わ', weight: 100, initialWeight: 100 }, { character: 'を', weight: 100, initialWeight: 100 }, { character: 'ほ', weight: 100, initialWeight: 100 }, { character: 'へ', weight: 200, initialWeight: 200 }, { character: 'ー', weight: 200, initialWeight: 200 }],
+                            [{ character: 'た', weight: 10, initialWeight: 10 }, { character: 'て', weight: 10, initialWeight: 10 }, { character: 'い', weight: 10, initialWeight: 10 }, { character: 'す', weight: 10, initialWeight: 10 }, { character: 'か', weight: 50, initialWeight: 50 }, { character: 'ん', weight: 30, initialWeight: 30 }, { character: 'な', weight: 10, initialWeight: 10 }, { character: 'に', weight: 10, initialWeight: 10 }, { character: 'ら', weight: 10, initialWeight: 10 }, { character: 'せ', weight: 10, initialWeight: 10 }],
+                            [{ character: 'ち', weight: 10, initialWeight: 10 }, { character: 'と', weight: 10, initialWeight: 10 }, { character: 'し', weight: 10, initialWeight: 10 }, { character: 'は', weight: 10, initialWeight: 10 }, { character: 'き', weight: 50, initialWeight: 50 }, { character: 'く', weight: 50, initialWeight: 50 }, { character: 'ま', weight: 10, initialWeight: 10 }, { character: 'の', weight: 10, initialWeight: 10 }, { character: 'り', weight: 50, initialWeight: 50 }, { character: 'れ', weight: 30, initialWeight: 30 }, { character: 'け', weight: 50, initialWeight: 50 }, { character: 'む', weight: 100, initialWeight: 100 }],
+                            [{ character: 'つ', weight: 10, initialWeight: 10 }, { character: 'さ', weight: 50, initialWeight: 50 }, { character: 'そ', weight: 50, initialWeight: 50 }, { character: 'ひ', weight: 10, initialWeight: 10 }, { character: 'こ', weight: 50, initialWeight: 50 }, { character: 'み', weight: 50, initialWeight: 50 }, { character: 'も', weight: 10, initialWeight: 10 }, { character: 'ね', weight: 10, initialWeight: 10 }, { character: 'る', weight: 30, initialWeight: 30 }, { character: 'め', weight: 50, initialWeight: 50 }, { character: 'ろ', weight: 100, initialWeight: 100 }]
+                        ],
+                        katakanaKeys: [
+                            [{ character: 'ヌ', weight: 100, initialWeight: 100 }, { character: 'フ', weight: 10, initialWeight: 10 }, { character: 'ア', weight: 10, initialWeight: 10 }, { character: 'ウ', weight: 10, initialWeight: 10 }, { character: 'エ', weight: 50, initialWeight: 50 }, { character: 'オ', weight: 100, initialWeight: 100 }, { character: 'ヤ', weight: 50, initialWeight: 50 }, { character: 'ユ', weight: 50, initialWeight: 50 }, { character: 'ヨ', weight: 100, initialWeight: 100 }, { character: 'ワ', weight: 100, initialWeight: 100 }, { character: 'ヲ', weight: 100, initialWeight: 100 }, { character: 'ホ', weight: 100, initialWeight: 100 }, { character: 'ヘ', weight: 200, initialWeight: 200 }, { character: 'ー', weight: 200, initialWeight: 200 }],
+                            [{ character: 'タ', weight: 10, initialWeight: 10 }, { character: 'テ', weight: 10, initialWeight: 10 }, { character: 'イ', weight: 10, initialWeight: 10 }, { character: 'ス', weight: 10, initialWeight: 10 }, { character: 'カ', weight: 50, initialWeight: 50 }, { character: 'ン', weight: 30, initialWeight: 30 }, { character: 'ナ', weight: 10, initialWeight: 10 }, { character: 'ニ', weight: 10, initialWeight: 10 }, { character: 'ラ', weight: 10, initialWeight: 10 }, { character: 'セ', weight: 10, initialWeight: 10 }],
+                            [{ character: 'チ', weight: 10, initialWeight: 10 }, { character: 'ト', weight: 10, initialWeight: 10 }, { character: 'シ', weight: 10, initialWeight: 10 }, { character: 'ハ', weight: 10, initialWeight: 10 }, { character: 'キ', weight: 50, initialWeight: 50 }, { character: 'ク', weight: 50, initialWeight: 50 }, { character: 'マ', weight: 10, initialWeight: 10 }, { character: 'ノ', weight: 10, initialWeight: 10 }, { character: 'リ', weight: 50, initialWeight: 50 }, { character: 'レ', weight: 30, initialWeight: 30 }, { character: 'ケ', weight: 50, initialWeight: 50 }, { character: 'ム', weight: 100, initialWeight: 100 }],
+                            [{ character: 'ツ', weight: 10, initialWeight: 10 }, { character: 'サ', weight: 50, initialWeight: 50 }, { character: 'ソ', weight: 50, initialWeight: 50 }, { character: 'ヒ', weight: 10, initialWeight: 10 }, { character: 'コ', weight: 50, initialWeight: 50 }, { character: 'ミ', weight: 50, initialWeight: 50 }, { character: 'モ', weight: 10, initialWeight: 10 }, { character: 'ネ', weight: 10, initialWeight: 10 }, { character: 'ル', weight: 30, initialWeight: 30 }, { character: 'メ', weight: 50, initialWeight: 50 }, { character: 'ロ', weight: 100, initialWeight: 100 }]
+                        ],
+                        currentKeys: [],
+                        currentKana: '',
+                        kana_mode: true, // 片仮名モード
+                        simple_mode: true, // 初心者モード
+                        weight_show: false, // 重さ値を表示
+                        largeMode: false, // 巨大モード
+                        correctSound: [
+                            {
+                                label: "効果音１",
+                                value: 0,
+                                sound: new Audio('./resource/key_sound_01.mp3')
+                            },
+                            {
+                                label: "効果音２",
+                                value: 1,
+                                sound: new Audio('./resource/key_sound_02.mp3')
+                            },
+                            {
+                                label: "トライトーン",
+                                value: 2,
+                                sound: new Audio('./resource/トライトーン.mp3')
+                            }
+                        ],
+                        correctSoundDefault: 0,
+                        errorSound: new Audio('./resource/エラー.mp3')
+                    }
+                },
+                created() {
+                    this.correctSound[0].sound.preload = 'auto'
+                    this.errorSound.preload = 'auto'
+                },
+                mounted() {
+                    this.switchKanaMode()
+                    window.addEventListener('keydown', this.handleInput)
+                },
+                beforeDestroy() {
+                    window.removeEventListener('keydown', this.handleInput)
+                },
+                methods: {
+                    switchKanaMode() {
+                        // kana_modeに応じて配列の値を切り替える
+                        this.currentKeys = this.kana_mode ? this.katakanaKeys : this.hiraganaKeys;
+                        this.generateRandomHiragana();
+                    },
+                    generateRandomHiragana() {
+                        const flatKeys = this.currentKeys.flat()
 
-          // 総重さを計算
-          const totalWeight = flatKeys.reduce((sum, key) => sum + key.weight, 0)
-          // 0から総重みまでの乱数を生成する
-          let randomValue = Math.random() * totalWeight
-          // console.log("randomValue: ", randomValue)
-          let lastHiragana = this.currentHiragana; // 最後の平仮名を記録する
-          // 仮名のループ処理と重みに基づく選択
-          for (let key of flatKeys) {
-            randomValue -= key.weight
+                        // 総重さを計算
+                        const totalWeight = flatKeys.reduce((sum, key) => sum + key.weight, 0)
+                        // 0から総重みまでの乱数を生成する
+                        let randomValue = Math.random() * totalWeight
+                        let lastHiragana = this.currentKana; // 最後の平仮名を記録する
+                        // 仮名のループ処理と重みに基づく選択
+                        for (let key of flatKeys) {
+                            randomValue -= key.weight
 
-            if (randomValue <= 0 && key.character !== lastHiragana) {
-              this.currentHiragana = key.character
-              // console.log("flatKeys: ", flatKeys)
-              return
-            }
-          }
-        },
-        handleInput(event) {
-          if (event.key === "Escape" && this.largeMode) this.largeMode = false 
-          
-          // 全ての仮名文字を一つの配列に抽出する
-          const allHiragana = this.hiraganaKeys.flat().map(k => k.character)
-          
-          // キー入力が仮名の場合のみ比較する
-          if (allHiragana.includes(event.key)) {
-            let currentKey = this.currentKeys.flat().find(k => k.character === this.currentHiragana)
+                            if (randomValue <= 0 && key.character !== lastHiragana) {
+                                this.currentKana = key.character
+                                return
+                            }
+                        }
+                    },
+                    handleInput(event) {
+                        if (event.key === "Escape" && this.largeMode) this.largeMode = false
 
-            // kana_mode
-            let index = this.hiraganaKeys.flat().findIndex(k => k.character === event.key)
-            let char_hiraToKana = this.katakanaKeys.flat()[index].character
-            
-            const isCorrectInput = this.kana_mode ? char_hiraToKana === this.currentHiragana : event.key === this.currentHiragana
-            if (isCorrectInput) {
-              if (!this.correctSound[this.correctSoundDefault].sound.paused) {
-                // 効果音が再生されている場合は、停止してリセットして
-                this.correctSound[this.correctSoundDefault].sound.pause()
-                this.correctSound[this.correctSoundDefault].sound.currentTime = 0
-              }
-              this.correctSound[this.correctSoundDefault].sound.play()
-              
-              currentKey.weight *= 0.7 // 正しい場合は、仮名の重みを減らす
-              this.generateRandomHiragana()
-            } else {
-              this.errorSound.play()
-              // 入力が間違っている場合は、現在の仮名の重みを増やします
-              currentKey.weight *= 2 // 間違った後に重みを追加
+                        // 全ての仮名文字を一つの配列に抽出する
+                        const allHiragana = this.hiraganaKeys.flat().map(k => k.character)
 
-              this.$message({
-                  message: '間違いました！',
-                  type: "error",
-                  offset: 100,
-                  duration: 500
-              })
-            }
-          }
-        }
-      }
-    })
-  </script>
-</body>
+                        // キー入力が仮名の場合のみ比較する
+                        if (allHiragana.includes(event.key)) {
+                            let currentKey = this.currentKeys.flat().find(k => k.character === this.currentKana)
+
+                            // kana_mode
+                            let index = this.hiraganaKeys.flat().findIndex(k => k.character === event.key)
+                            let char_hiraToKana = this.katakanaKeys.flat()[index].character
+
+                            const isCorrectInput = this.kana_mode ? char_hiraToKana === this.currentKana : event.key === this.currentKana
+                            if (isCorrectInput) {
+                                if (!this.correctSound[this.correctSoundDefault].sound.paused) {
+                                    // 効果音が再生されている場合は、停止してリセットして
+                                    this.correctSound[this.correctSoundDefault].sound.pause()
+                                    this.correctSound[this.correctSoundDefault].sound.currentTime = 0
+                                }
+                                this.correctSound[this.correctSoundDefault].sound.play()
+
+                                // 正しい場合は、仮名の重みを減らす
+                                const minWeight = currentKey.initialWeight * 0.5
+                                currentKey.weight = Math.max(currentKey.weight * 0.7, minWeight)
+                                this.generateRandomHiragana()
+                            } else {
+                                this.errorSound.play()
+                                // 入力が間違っている場合は、現在の仮名の重みを増やします
+                                currentKey.weight *= 2 // 間違った後に重みを追加
+
+                                this.$message({
+                                    message: '間違いました！',
+                                    type: "error",
+                                    offset: 100,
+                                    duration: 500
+                                })
+                            }
+                        }
+                    }
+                }
+            })
+        </script>
+    </body>
 </html>
