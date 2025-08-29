@@ -201,7 +201,7 @@
                     <el-tooltip class="item" effect="dark" content="仮名 / 単語 / 文章 モードを切り替える" placement="top">
                         <span class="text">練習タイプ</span>
                     </el-tooltip>
-                    <el-select v-model="exerciseTypeIndex" @change="exerciseTypeChange" size="mini" placeholder="効果音" style="width: 120px;">
+                    <el-select v-model="exerciseTypeIndex" @change="exerciseTypeChange" size="mini" placeholder="モード" style="width: 120px;">
                         <el-option
                             v-for="item in exerciseType"
                             :key="item.value"
@@ -314,7 +314,7 @@
                                 value: 2
                             }
                         ],
-                        exerciseTypeIndex: 1,
+                        exerciseTypeIndex: parseInt(localStorage.getItem("exerciseTypeIndex")) || 0,
                         wordsArray: [],
                         words_selected_item: "",
 
@@ -423,6 +423,7 @@
                         source.start(0);
                     },
                     exerciseTypeChange(e) {
+                        localStorage.setItem("exerciseTypeIndex", e);
                         if (e === 0) {
                             this.generateRandomHiragana();
                             window.removeEventListener('keydown', this.handleWordInput)
