@@ -378,7 +378,10 @@
                 mounted() {
                     this.currentKeys = this.kana_mode ? this.katakanaKeys : this.hiraganaKeys;
 
-                    if (this.exerciseTypeIndex === 0) window.addEventListener('keydown', this.handleRubyInput)
+                    if (this.exerciseTypeIndex === 0) {
+                        this.generateRandomHiragana();
+                        window.addEventListener('keydown', this.handleRubyInput)
+                    }
                     else if (this.exerciseTypeIndex === 1) window.addEventListener('keydown', this.handleWordInput)
 
                     console.log("KanaWords: ", KanaWords)
