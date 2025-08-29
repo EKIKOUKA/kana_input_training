@@ -2,15 +2,16 @@
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="かなキーボード練習">
         <title>かなキーボード練習</title>
+        <script src="words.js"></script>
+        <script src="sentence.js"></script>
+
         <script src="./resource/library/vue.min.js"></script>
-        <script src="./resource/library/less.min.js"></script>
         <script src="./resource/library/element_ui.min.js"></script>
         <link rel="stylesheet" href="./resource/library/element_ui.css">
 
-        <style lang="less">
+        <style>
             .fade-enter-active, .fade-leave-active {
                 transition: opacity .35s;
             }
@@ -62,6 +63,10 @@
                     text-align: center;
                 }
 
+                .input_word {
+                    height: 24px;border-bottom: 1px solid black;margin-top: -20px;
+                }
+
                 .keyboard {
                     display: flex;
                     flex-direction: column;
@@ -69,7 +74,14 @@
                     justify-content: center;
                     border: 2px solid rgb(216, 216, 216);
                     padding: 10px 10px 2px;
+                    margin-top: 20px;
                     border-radius: 12px;
+                }
+                .ruby {
+                    opacity: 0.1;
+                }
+                .words-trans {
+                    opacity: 0.1;
                 }
 
                 .row {
@@ -158,7 +170,7 @@
             </transition>
 
             <div v-show="!largeMode" class="mode">
-                <div class="option">
+                <div class="option" v-if="exerciseTypeIndex === 0">
                     <el-tooltip class="item" effect="dark" content="平仮名 / 片仮名 を切り替える" placement="top">
                         <span class="text">仮名タイプ</span>
                     </el-tooltip>
@@ -167,26 +179,49 @@
                         <el-radio-button :label="true">片仮名</el-radio-button>
                     </el-radio-group>
                 </div>
-                <div class="option">
+                <div class="option" v-if="exerciseTypeIndex === 0">
                     <el-tooltip class="item" effect="dark" content="現在練習しているの仮名が強調します" placement="top">
                         <span class="text">初心者モード</span>
                     </el-tooltip>
                     <el-switch v-model="simple_mode"></el-switch>
                 </div>
-                <div class="option">
+                <div class="option" v-if="exerciseTypeIndex === 0">
                     <el-tooltip class="item" effect="dark" content="一つ仮名で展示しもす" placement="top">
                         <span class="text">巨大モード</span>
                     </el-tooltip>
                     <el-switch v-model="largeMode"></el-switch>
                 </div>
-                <div class="option">
+                <div class="option" v-if="exerciseTypeIndex === 0">
                     <el-tooltip class="item" effect="dark" content="重み値を示します、重み値が高いほど現れる確率が高くなります" placement="top">
                         <span class="text">重さ値を表示</span>
                     </el-tooltip>
                     <el-switch v-model="weight_show"></el-switch>
                 </div>
                 <div class="option">
-                    <el-select v-model="correctSoundDefault" size="mini" placeholder="効果音" style="width: 120px;">
+                    <el-tooltip class="item" effect="dark" content="仮名 / 単語 / 文章 モードを切り替える" placement="top">
+                        <span class="text">練習タイプ</span>
+                    </el-tooltip>
+                    <el-select v-model="exerciseTypeIndex" @change="exerciseTypeChange" size="mini" placeholder="効果音" style="width: 120px;">
+                        <el-option
+                            v-for="item in exerciseType"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="option" v-if="exerciseTypeIndex === 1">
+                    <el-select v-model="words_selected_item" @change="wordsItemChange" size="mini" placeholder="単語リスト" style="width: 120px;">
+                        <el-option
+                                v-for="item in wordsArray"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="option">
+                    <el-select v-model="correctSoundSelected" @change="correctSoundChange" size="mini" placeholder="効果音" style="width: 120px;">
                         <el-option
                             v-for="item in correctSound"
                             :key="item.value"
@@ -197,8 +232,21 @@
                 </div>
             </div>
 
+            <!--            <el-input style="margin: 0 auto;display: block;-->
+            <!--    width: 500px;" type="textarea" @input="handleSentenceInput" @focus="focusin" @blur="focusout" :placeholder="Sentence['Bad Apple!!'].japanese" v-model="textarea"></el-input>-->
+            <!--            <div style="white-space: pre-line;-->
+            <!--    height: 100px;-->
+            <!--    overflow: scroll;-->
+            <!--    margin: 0 auto;-->
+            <!--    width: 500px;">{{ Sentence["Bad Apple!!"].japanese }}</div>-->
+
             <div v-show="!largeMode" class="content">
-                <h2>現在の{{ kana_mode ? "片仮名" : "平仮名" }}: {{ currentKana }}</h2>
+                <h2 v-if="exerciseTypeIndex === 0">現在の{{ kana_mode ? "片仮名" : "平仮名" }}: {{ currentKana }}</h2>
+                <el-progress v-if="exerciseTypeIndex === 1" :percentage="((localStorage.getItem(`words_selected_${words_selected_item}_index`) || 0) / KanaWords[localStorage.getItem('words_selected_item')].words.length * 100).toFixed(2)" :text-inside="true" :stroke-width="20" style="width: 500px;"></el-progress>
+                <h1 v-if="exerciseTypeIndex === 1">{{words.word}}</h1>
+                <p v-if="exerciseTypeIndex === 1" class="input_word">{{ input_word }}</p>
+                <div v-if="exerciseTypeIndex === 1" class="ruby">{{words.ruby}}</div>
+                <div v-if="exerciseTypeIndex === 1" class="words-trans">{{words.trans}}</div>
                 <transition name="fade1">
                     <div class="keyboard">
                         <div class="row">
@@ -210,7 +258,7 @@
                                 <span class="double" v-if="i === 9">{{ currentKeys[0][10].character }}</span>
                                 <span class="weight" v-if="weight_show">
                                     {{ (currentKana === "を" && key.character === "わ") ||
-                                        (currentKana === 'ヲ' && key.character === 'ワ') ? currentKeys[0][10].weight : key.weight }}
+                                       (currentKana === 'ヲ' && key.character === 'ワ') ? currentKeys[0][10].weight : key.weight }}
                                 </span>
                             </div>
                             <div class="key backspace"></div>
@@ -238,7 +286,7 @@
                         </div>
                         <div class="row">
                             <div class="key" style="min-width: 140px;">shift</div>
-                            <div v-for="key in currentKeys[3]" :key="key.character" :class="['key', { highlight: key.character === currentKana && simple_mode }]">
+                            <div v-for="key in currentKeys[3]" :key="key.character" :class="['key', { highlight: key.character == currentKana && simple_mode }]">
                                 <span>{{ key.character }}</span>
                                 <span class="weight" v-if="weight_show">{{ key.weight }}</span>
                             </div>
@@ -254,6 +302,22 @@
                 el: '#app',
                 data() {
                     return {
+                        exerciseType: [
+                            {
+                                label: "仮名",
+                                value: 0
+                            }, {
+                                label: "単語",
+                                value: 1
+                            }, {
+                                label: "文章",
+                                value: 2
+                            }
+                        ],
+                        exerciseTypeIndex: 1,
+                        wordsArray: [],
+                        words_selected_item: "",
+
                         hiraganaKeys: [
                             [{ character: 'ぬ', weight: 100, initialWeight: 100 }, { character: 'ふ', weight: 10, initialWeight: 10 }, { character: 'あ', weight: 10, initialWeight: 10 }, { character: 'う', weight: 10, initialWeight: 10 }, { character: 'え', weight: 50, initialWeight: 50 }, { character: 'お', weight: 100, initialWeight: 100 }, { character: 'や', weight: 50, initialWeight: 50 }, { character: 'ゆ', weight: 50, initialWeight: 50 }, { character: 'よ', weight: 100, initialWeight: 100 }, { character: 'わ', weight: 100, initialWeight: 100 }, { character: 'を', weight: 100, initialWeight: 100 }, { character: 'ほ', weight: 100, initialWeight: 100 }, { character: 'へ', weight: 200, initialWeight: 200 }, { character: 'ー', weight: 200, initialWeight: 200 }],
                             [{ character: 'た', weight: 10, initialWeight: 10 }, { character: 'て', weight: 10, initialWeight: 10 }, { character: 'い', weight: 10, initialWeight: 10 }, { character: 'す', weight: 10, initialWeight: 10 }, { character: 'か', weight: 50, initialWeight: 50 }, { character: 'ん', weight: 30, initialWeight: 30 }, { character: 'な', weight: 10, initialWeight: 10 }, { character: 'に', weight: 10, initialWeight: 10 }, { character: 'ら', weight: 10, initialWeight: 10 }, { character: 'せ', weight: 10, initialWeight: 10 }],
@@ -269,42 +333,184 @@
                         currentKeys: [],
                         currentKana: '',
                         kana_mode: true, // 片仮名モード
-                        simple_mode: true, // 初心者モード
+                        simple_mode: false, // 初心者モード
                         weight_show: false, // 重さ値を表示
                         largeMode: false, // 巨大モード
+                        audioContext: null, // AudioContext
                         correctSound: [
                             {
                                 label: "効果音１",
                                 value: 0,
-                                sound: new Audio('./resource/key_sound_01.mp3')
+                                url: './resource/key_sound_01.wav',
+                                buffer: null
                             },
                             {
                                 label: "効果音２",
                                 value: 1,
-                                sound: new Audio('./resource/key_sound_02.mp3')
+                                url: './resource/key_sound_02.wav',
+                                buffer: null
                             },
                             {
                                 label: "トライトーン",
                                 value: 2,
-                                sound: new Audio('./resource/トライトーン.mp3')
+                                url: './resource/トライトーン.wav',
+                                buffer: null
                             }
                         ],
-                        correctSoundDefault: 0,
-                        errorSound: new Audio('./resource/エラー.mp3')
+                        correctSoundSelected: 0,
+                        errorSound: {
+                            url: './resource/エラー.wav'
+                        },
+
+                        words: {},
+                        input_word: "",
+                        textarea: ""
                     }
                 },
-                created() {
-                    this.correctSound[0].sound.preload = 'auto'
-                    this.errorSound.preload = 'auto'
+                async created() {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log("audioContext: ", this.audioContext)
+                    for (let sound of this.correctSound) {
+                        sound.buffer = await this.loadSound(sound.url);
+                    }
+                    this.errorSound.buffer = await this.loadSound(this.errorSound.url);
                 },
                 mounted() {
-                    this.switchKanaMode()
-                    window.addEventListener('keydown', this.handleInput)
+                    this.currentKeys = this.kana_mode ? this.katakanaKeys : this.hiraganaKeys;
+
+                    if (this.exerciseTypeIndex === 0) window.addEventListener('keydown', this.handleRubyInput)
+                    else if (this.exerciseTypeIndex === 1) window.addEventListener('keydown', this.handleWordInput)
+
+                    console.log("KanaWords: ", KanaWords)
+                    Object.keys(KanaWords).forEach(item => {
+                        this.wordsArray.push({
+                            label: KanaWords[item].title,
+                            value: item
+                        })
+                    })
+                    if (!this.words_selected_item) this.words_selected_item = localStorage.getItem("words_selected_item") || this.wordsArray[0].value
+
+                    localStorage.setItem("words_selected_item", this.words_selected_item);
+                    localStorage.setItem("words_selected_item_length", JSON.stringify(KanaWords[localStorage.getItem("words_selected_item")].words.length));
+                    this.words = KanaWords[localStorage.getItem("words_selected_item")].words[parseInt(localStorage.getItem(`words_selected_${this.words_selected_item}_index`)) || 0]
+                    console.log("Sentence: ", Sentence)
                 },
                 beforeDestroy() {
-                    window.removeEventListener('keydown', this.handleInput)
+                    if (this.exerciseTypeIndex === 0) window.removeEventListener('keydown', this.handleRubyInput)
+                    else if (this.exerciseTypeIndex === 1) window.removeEventListener('keydown', this.handleWordInput)
                 },
                 methods: {
+                    async loadSound(url) {
+                        const res = await fetch(url);
+                        const arrayBuffer = await res.arrayBuffer();
+                        return await this.audioContext.decodeAudioData(arrayBuffer);
+                    },
+                    playCorrectSound() {
+                        const sound = this.correctSound[this.correctSoundSelected];
+                        if (!sound || !sound.buffer) return;
+
+                        const source = this.audioContext.createBufferSource();
+                        source.buffer = sound.buffer;
+                        source.connect(this.audioContext.destination);
+                        source.start(0);
+                    },
+                    playErrorSound() {
+                        if (!this.errorSound.buffer) return;
+
+                        const source = this.audioContext.createBufferSource();
+                        source.buffer = this.errorSound.buffer;
+                        source.connect(this.audioContext.destination);
+                        source.start(0);
+                    },
+                    exerciseTypeChange(e) {
+                        if (e === 0) {
+                            this.generateRandomHiragana();
+                            window.removeEventListener('keydown', this.handleWordInput)
+                            window.addEventListener('keydown', this.handleRubyInput)
+                        } else if (e === 1) {
+                            this.currentKana = ''
+                            window.removeEventListener('keydown', this.handleRubyInput)
+                            window.addEventListener('keydown', this.handleWordInput)
+                        }
+                    },
+                    wordsItemChange() {
+                        localStorage.setItem("words_selected_item", this.words_selected_item);
+                        localStorage.setItem("words_selected_item_length", JSON.stringify(KanaWords[localStorage.getItem("words_selected_item")].words.length));
+                        this.words = KanaWords[localStorage.getItem("words_selected_item")].words[parseInt(localStorage.getItem(`words_selected_${this.words_selected_item}_index`)) || 0]
+                    },
+                    correctSoundChange() {
+                        this.playCorrectSound();
+                    },
+
+                    normalizeKana(s) {
+                        return s ? s.normalize('NFKC') : '';
+                    },
+                    isKana(ch) {
+                        const cp = ch.codePointAt(0);
+                        return (
+                            (cp >= 0x3040 && cp <= 0x309F) || // Hiragana
+                            (cp >= 0x30A0 && cp <= 0x30FF) || // Katakana（含「ー」）
+                            (cp >= 0x31F0 && cp <= 0x31FF)    // Katakana Phonetic Extensions
+                        );
+                    },
+                    handleWordInput(event) {
+                        if (event.key === "Escape" && this.largeMode) this.largeMode = false
+
+                        if (event.key === "Backspace") {
+                            this.input_word = this.input_word.slice(0, -1);
+                            return;
+                        }
+
+                        // IMEの組字におけるキーまたは仮想キーをスキップ
+                        if (event.isComposing || event.key === 'Process') return;
+
+                        // 今回の入力を一段のテキストとして正規化してください（例：'しゅし゛ん' -> 'しゅじん'）
+                        const chunk = this.normalizeKana(event.key);
+                        if (!chunk) return;
+
+                        // 制御文字をフィルタリングする
+                        if (chunk.length === 1 && chunk.charCodeAt(0) < 0x20) return;
+
+                        // 許容される仮名を逐語的に追加する
+                        for (const ch of chunk) {
+                            if (this.isKana(ch)) this.input_word += ch;
+                        }
+                        // 両辺を先に正規化してから比較する
+                        const targetWord = this.normalizeKana(this.words.ruby || '');
+                        const inputWord = this.normalizeKana(this.input_word);
+
+                        if (inputWord === targetWord) {
+                            let words_selected_item = `words_selected_${this.words_selected_item}_index`
+                            let words_selected_index = localStorage.getItem(words_selected_item)
+
+                            this.playCorrectSound(); // 正確効果音を再生
+                            this.input_word = "";
+                            if (words_selected_index >= KanaWords[localStorage.getItem("words_selected_item")].words.length - 1) {
+                                this.$message({message: "終わり、お疲れ様でした!", type: "success", duration: 90000});
+                                setTimeout(() => {
+                                    if (confirm("進度をリセットしますか？")) {
+                                        this.words = KanaWords[localStorage.getItem("words_selected_item")].words[0]
+                                        localStorage.setItem(`words_selected_${this.words_selected_item}_index`, 0);
+                                    }
+                                }, 1000)
+                                return
+                            }
+                            words_selected_index++;
+                            localStorage.setItem(`words_selected_${this.words_selected_item}_index`, words_selected_index);
+                            this.words = KanaWords[localStorage.getItem("words_selected_item")].words[words_selected_index]
+                        } else {
+                            // this.$message({message: this.input_word, type: "info"})
+                        }
+                    },
+                    handleSentenceInput(event) {
+                        // console.log("event.key: ", event.key)
+                    },
+                    focusin() {
+                        // window.removeEventListener('keydown', this.handleInput)
+                    },
+                    focusout() {
+                        // window.addEventListener('keydown', this.handleInput)
+                    },
                     switchKanaMode() {
                         // kana_modeに応じて配列の値を切り替える
                         this.currentKeys = this.kana_mode ? this.katakanaKeys : this.hiraganaKeys;
@@ -328,12 +534,14 @@
                             }
                         }
                     },
-                    handleInput(event) {
+
+                    handleRubyInput(event) {
                         if (event.key === "Escape" && this.largeMode) this.largeMode = false
 
                         // 全ての仮名文字を一つの配列に抽出する
                         const allHiragana = this.hiraganaKeys.flat().map(k => k.character)
-
+                        console.log("event.key", event.key)
+                        if (event.key === "Backspace") this.input_word = this.input_word.slice(0, -1)
                         // キー入力が仮名の場合のみ比較する
                         if (allHiragana.includes(event.key)) {
                             let currentKey = this.currentKeys.flat().find(k => k.character === this.currentKana)
@@ -344,19 +552,14 @@
 
                             const isCorrectInput = this.kana_mode ? char_hiraToKana === this.currentKana : event.key === this.currentKana
                             if (isCorrectInput) {
-                                if (!this.correctSound[this.correctSoundDefault].sound.paused) {
-                                    // 効果音が再生されている場合は、停止してリセットして
-                                    this.correctSound[this.correctSoundDefault].sound.pause()
-                                    this.correctSound[this.correctSoundDefault].sound.currentTime = 0
-                                }
-                                this.correctSound[this.correctSoundDefault].sound.play()
+                                this.playCorrectSound();
 
                                 // 正しい場合は、仮名の重みを減らす
                                 const minWeight = currentKey.initialWeight * 0.5
                                 currentKey.weight = Math.max(currentKey.weight * 0.7, minWeight)
                                 this.generateRandomHiragana()
                             } else {
-                                this.errorSound.play()
+                                this.playErrorSound();
                                 // 入力が間違っている場合は、現在の仮名の重みを増やします
                                 currentKey.weight *= 2 // 間違った後に重みを追加
 
