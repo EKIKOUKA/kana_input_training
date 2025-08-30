@@ -111,12 +111,11 @@
                     }
 
                     &.dotted::after {
-                        content: "";
-                        width: 2px;
-                        height: 2px;
-                        background-color: gray;
+                        content: ".";
                         position: absolute;
                         top: 50%;
+                        transform: translateY(-50%);
+                        font-size: 15px;
                     }
 
                     &.nu_key {
