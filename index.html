@@ -70,7 +70,7 @@
                 .keyboard {
                     display: flex;
                     flex-direction: column;
-                    width: 1124px;
+                    width: 1120px;
                     justify-content: center;
                     border: 2px solid rgb(216, 216, 216);
                     padding: 10px 10px 2px;
@@ -145,8 +145,6 @@
                     &.backspace {
                         background: url(./resource/backspace.svg) bottom right no-repeat;
                         background-size: 60% 50%;
-                        position: absolute;
-                        right: -8px;
                     }
                     &.enter {
                         width: 113px;
@@ -155,7 +153,7 @@
                         background-size: 100% 100%;
                         border: none;
                         position: absolute;
-                        right: -9px;
+                        right: -10px;
                     }
                     &.shift {
                         font-family: -apple-system;
@@ -294,7 +292,7 @@
                                 <span>{{ key.character }}</span>
                                 <span class="weight" v-if="weight_show">{{ key.weight }}</span>
                             </div>
-                            <div class="key shift" style="min-width: 120px;justify-content: end;padding-right: 7px;">⇧</div>
+                            <div class="key shift" style="min-width: 117px;justify-content: end;padding-right: 7px;">⇧</div>
                         </div>
                     </div>
                 </transition>
