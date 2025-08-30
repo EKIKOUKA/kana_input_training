@@ -70,7 +70,7 @@
                 .keyboard {
                     display: flex;
                     flex-direction: column;
-                    width: 1180px;
+                    width: 1124px;
                     justify-content: center;
                     border: 2px solid rgb(216, 216, 216);
                     padding: 10px 10px 2px;
@@ -103,6 +103,7 @@
                     align-items: end;
                     color: gray;
                     position: relative;
+                    box-sizing: border-box;
 
                     &.highlight {
                         background-color: #409EFF;
@@ -119,7 +120,7 @@
                     }
 
                     &.nu_key {
-                        min-width: 110px;
+                        min-width: 107px;
                     }
 
                     .double {
@@ -141,21 +142,24 @@
                         white-space: nowrap;
                     }
 
-                    &.enter {
-                        width: 129px;
-                        height: 158px;
-                        background: url(./resource/enter.svg) no-repeat;
-                        background-size: 100% 100%;
-                        border: none;
-                        position: absolute;
-                        left: 1056px;
-                    }
-
                     &.backspace {
                         background: url(./resource/backspace.svg) bottom right no-repeat;
                         background-size: 60% 50%;
                         position: absolute;
                         right: -8px;
+                    }
+                    &.enter {
+                        width: 113px;
+                        height: 149px;
+                        background: url(./resource/enter.svg) no-repeat;
+                        background-size: 100% 100%;
+                        border: none;
+                        position: absolute;
+                        right: -9px;
+                    }
+                    &.shift {
+                        font-family: -apple-system;
+                        padding-bottom: 4px;
                     }
                 }
             }
@@ -212,10 +216,10 @@
                 <div class="option" v-if="exerciseTypeIndex === 1">
                     <el-select v-model="words_selected_item" @change="wordsItemChange" size="mini" placeholder="単語リスト" style="width: 120px;">
                         <el-option
-                                v-for="item in wordsArray"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
+                            v-for="item in wordsArray"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
                         </el-option>
                     </el-select>
                 </div>
@@ -250,7 +254,7 @@
                     <div class="keyboard">
                         <div class="row">
                             <div v-for="(key, i) in currentKeys[0]" :key="key.character" v-show="i !== 10" :class="['key', { nu_key: i === 0,
-                                highlight: (key.character === currentKana ||
+                                  highlight: (key.character === currentKana ||
                                   (currentKana === 'を' && key.character === 'わ') ||
                                   (currentKana === 'ヲ' && key.character === 'ワ')) && simple_mode }]">
                                 <span>{{ key.character }}</span>
@@ -263,9 +267,11 @@
                             <div class="key backspace"></div>
                         </div>
                         <div class="row">
-                            <div class="key" style="min-width: 66px;">→|</div>
-                            <div v-for="key in currentKeys[1]" :key="key.character"
-                                 :class="['key', { highlight: key.character === currentKana && simple_mode }]">
+                            <div class="key" style="min-width: 66px;justify-content: start;padding-left: 10px;font-family: -apple-system;font-size: 17px;">
+                                <span style="width: 15px;">→</span>
+                                <span style="font-size: 14px;position: relative;top: -3px;left: -2px;">|</span>
+                            </div>
+                            <div v-for="key in currentKeys[1]" :key="key.character" :class="['key', { highlight: key.character === currentKana && simple_mode }]">
                                 <span>{{ key.character }}</span>
                                 <span class="weight" v-if="weight_show">{{ key.weight }}</span>
                             </div>
@@ -276,20 +282,19 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="key" style="min-width: 105px;">control</div>
-                            <div v-for="(key, i) in currentKeys[2]" :key="key.character"
-                                 :class="['key', {highlight: key.character === currentKana && simple_mode, dotted: i === 3 || i === 6}]">
+                            <div class="key" style="min-width: 105px;justify-content: start;padding-left: 10px;font-size: 15px;">control</div>
+                            <div v-for="(key, i) in currentKeys[2]" :key="key.character" :class="['key', {highlight: key.character === currentKana && simple_mode, dotted: i === 3 || i === 6}]">
                                 <span>{{ key.character }}</span>
                                 <span class="weight" v-if="weight_show">{{ key.weight }}</span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="key" style="min-width: 140px;">shift</div>
+                            <div class="key shift" style="min-width: 138px;justify-content: start;padding-left: 10px;">⇧</div>
                             <div v-for="key in currentKeys[3]" :key="key.character" :class="['key', { highlight: key.character == currentKana && simple_mode }]">
                                 <span>{{ key.character }}</span>
                                 <span class="weight" v-if="weight_show">{{ key.weight }}</span>
                             </div>
-                            <div class="key" style="min-width: 122px;">shift</div>
+                            <div class="key shift" style="min-width: 120px;justify-content: end;padding-right: 7px;">⇧</div>
                         </div>
                     </div>
                 </transition>
