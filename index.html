@@ -233,9 +233,9 @@
                 </div>
             </div>
 
-            <!--            <el-input style="margin: 0 auto;display: block;-->
+            <!--    <el-input style="margin: 0 auto;display: block;-->
             <!--    width: 500px;" type="textarea" @input="handleSentenceInput" @focus="focusin" @blur="focusout" :placeholder="Sentence['Bad Apple!!'].japanese" v-model="textarea"></el-input>-->
-            <!--            <div style="white-space: pre-line;-->
+            <!--    <div style="white-space: pre-line;-->
             <!--    height: 100px;-->
             <!--    overflow: scroll;-->
             <!--    margin: 0 auto;-->
@@ -441,7 +441,7 @@
                     },
                     wordsItemChange() {
                         localStorage.setItem("words_selected_item", this.words_selected_item);
-                        localStorage.setItem("words_selected_item_length", JSON.stringify(KanaWords[localStorage.getItem("words_selected_item")].words.length));
+                        localStorage.setItem("words_selected_item_length", KanaWords[localStorage.getItem("words_selected_item")].words.length);
                         this.words = KanaWords[localStorage.getItem("words_selected_item")].words[parseInt(localStorage.getItem(`words_selected_${this.words_selected_item}_index`)) || 0]
                     },
                     correctSoundChange() {
