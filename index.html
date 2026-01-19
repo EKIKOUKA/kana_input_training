@@ -463,7 +463,10 @@
                         if (event.key === "Escape" && this.largeMode) this.largeMode = false
 
                         if (event.key === "Backspace") {
-                            this.input_word = this.input_word.slice(0, -1);
+                            const normalized = this.normalizeKana(this.input_word);
+                            const chars = Array.from(normalized);
+                            chars.pop();
+                            this.input_word = chars.join('');
                             return;
                         }
 
@@ -481,6 +484,7 @@
                         for (const ch of chunk) {
                             if (this.isKana(ch)) this.input_word += ch;
                         }
+                        this.input_word = this.normalizeKana(this.input_word);
                         // 両辺を先に正規化してから比較する
                         const targetWord = this.normalizeKana(this.words.ruby || '');
                         const inputWord = this.normalizeKana(this.input_word);
