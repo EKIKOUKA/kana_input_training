@@ -1,0 +1,149 @@
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .35s;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+body {
+    overflow-y: hidden;
+    margin: 0;
+}
+
+.large-mode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    font-size: 600px;
+}
+
+.mode {
+    margin: 8px;
+    display: flex;
+    justify-content: flex-end;
+
+    .option {
+        margin-left: 12px;
+        display: flex;
+        align-items: center;
+
+        .text {
+            margin-right: 5px;
+        }
+    }
+
+    span {
+        cursor: pointer;
+    }
+}
+
+.content {
+    margin: 150px auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h2 {
+        text-align: center;
+    }
+
+    .input_word {
+        height: 24px;border-bottom: 1px solid black;margin-top: -20px;
+    }
+
+    .keyboard {
+        display: flex;
+        flex-direction: column;
+        width: 1120px;
+        justify-content: center;
+        border: 2px solid rgb(216, 216, 216);
+        padding: 10px 10px 2px;
+        margin-top: 20px;
+        border-radius: 12px;
+    }
+    .ruby {
+        opacity: 0.1;
+    }
+    .words-trans {
+        opacity: 0.1;
+    }
+
+    .row {
+        display: flex;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .key {
+        text-align: center;
+        border: 2px solid rgb(216, 216, 216);
+        border-radius: 5px;
+        margin-right: 8px;
+        font-size: 20px;
+        min-width: 70px;
+        height: 70px;
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        color: gray;
+        position: relative;
+        box-sizing: border-box;
+
+        &.highlight {
+            background-color: #409EFF;
+            border-color: #409EFF;
+            color: white;
+        }
+
+        &.dotted::after {
+            content: ".";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+        }
+
+        &.nu_key {
+            min-width: 107px;
+        }
+
+        .double {
+            content: "";
+            position: absolute;
+            top: 25%;
+            right: 5%;
+        }
+
+        span.weight {
+            font-size: 10px;
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            color: green;
+            overflow: hidden;
+            width: 29px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        &.backspace {
+            background: url(./resource/backspace.svg) bottom right no-repeat;
+            background-size: 60% 50%;
+        }
+        &.enter {
+            width: 113px;
+            height: 149px;
+            background: url(./resource/enter.svg) no-repeat;
+            background-size: 100% 100%;
+            border: none;
+            position: absolute;
+            right: -10px;
+        }
+        &.shift {
+            font-family: -apple-system;
+            padding-bottom: 4px;
+        }
+    }
+}
