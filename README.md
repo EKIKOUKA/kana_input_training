@@ -3,5 +3,5 @@
 ### 使い方法：オンラインリンクはもちろん、プロジェクトをダウンロードしてindex.htmlをブラウザに開いても使えます。
 ### 注意：練習する時、かなモードでしかできません、ローマ字モードと英字モードは行けません。
 ウェブサイト：https://ekikouka.github.io/kana_input_training/
-<img width="2048" height="1073" alt="image" src="https://github.com/user-attachments/assets/0d5a0c36-f08d-4f6b-9cbd-2aac2d0883d1" />
-
+<img width="1470" height="811" alt="image" src="https://github.com/user-attachments/assets/f1537ade-4061-459f-a329-8dc7c787025d" />
+<img width="1470" height="808" alt="image" src="https://github.com/user-attachments/assets/a1507fdc-a12c-41c7-8fc9-a48e85e17e4b" />
