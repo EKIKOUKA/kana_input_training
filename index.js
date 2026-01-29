@@ -33,7 +33,7 @@ new Vue({
             currentKeys: [],
             currentKana: '',
             kana_mode: true, // 片仮名モード
-            simple_mode: false, // 初心者モード
+            simple_mode: true, // 初心者モード
             weight_show: false, // 重さ値を表示
             largeMode: false, // 巨大モード
             audioContext: null, // AudioContext
