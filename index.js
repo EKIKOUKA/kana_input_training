@@ -7,12 +7,16 @@ new Vue({
                     label: "仮名",
                     value: 0
                 }, {
-                    label: "単語",
+                    label: "JLPT単語",
                     value: 1
                 }, {
-                    label: "文章",
+                    label: "片仮名単語",
                     value: 2
                 }
+                // , {
+                //     label: "文章",
+                //     value: 3
+                // }
             ],
             exerciseTypeIndex: parseInt(localStorage.getItem("exerciseTypeIndex")) || 0,
             wordsArray: [],
@@ -81,28 +85,63 @@ new Vue({
         if (this.exerciseTypeIndex === 0) {
             this.generateRandomHiragana();
             window.addEventListener('keydown', this.handleRubyInput)
+        } else {
+            this.currentKana = '';
         }
-        else if (this.exerciseTypeIndex === 1) window.addEventListener('keydown', this.handleWordInput)
-
-        console.log("KanaWords: ", KanaWords)
-        Object.keys(KanaWords).forEach(item => {
+        Object.keys(JLPTWords).forEach(item => {
             this.wordsArray.push({
-                label: KanaWords[item].title,
+                label: JLPTWords[item].title,
                 value: item
             })
         })
         if (!this.words_selected_item) this.words_selected_item = localStorage.getItem("words_selected_item") || this.wordsArray[0].value
 
         localStorage.setItem("words_selected_item", this.words_selected_item);
-        localStorage.setItem("words_selected_item_length", JSON.stringify(KanaWords[localStorage.getItem("words_selected_item")].words.length));
-        this.words = KanaWords[localStorage.getItem("words_selected_item")].words[parseInt(localStorage.getItem(`words_selected_${this.words_selected_item}_index`)) || 0]
-        console.log("Sentence: ", Sentence)
+        localStorage.setItem("words_selected_item_length", JSON.stringify(JLPTWords[localStorage.getItem("words_selected_item")].words.length));
+
+        this.initWordData();
     },
     beforeDestroy() {
-        if (this.exerciseTypeIndex === 0) window.removeEventListener('keydown', this.handleRubyInput)
-        else if (this.exerciseTypeIndex === 1) window.removeEventListener('keydown', this.handleWordInput)
+        if (this.exerciseTypeIndex === 0) window.removeEventListener('keydown', this.handleRubyInput);
+        else window.removeEventListener('keydown', this.handleWordInput);
     },
     methods: {
+        initWordData() {
+            if (this.exerciseTypeIndex === 2) {
+                const indexKey = `words_selected_katakana_special_index`;
+                const currentIndex = parseInt(localStorage.getItem(indexKey)) || 0;
+                const rawWord = katakanaWords[currentIndex];
+                
+                this.words = {
+                    ...rawWord,
+                    ruby: rawWord.word
+                };
+            } else if (this.exerciseTypeIndex === 1) {
+                const selected = this.words_selected_item;
+                const indexKey = `words_selected_${selected}_index`;
+                const currentIndex = parseInt(localStorage.getItem(indexKey)) || 0;
+
+                if (JLPTWords[selected]) {
+                    this.words = JLPTWords[selected].words[currentIndex];
+                }
+            }
+        },
+        calculatePercentage() {
+            let index, total;
+
+            if (this.exerciseTypeIndex === 2) {
+                index = parseInt(localStorage.getItem('words_selected_katakana_special_index')) || 0;
+                total = katakanaWords.length;
+            } else {
+                const selected = this.words_selected_item;
+                index = parseInt(localStorage.getItem(`words_selected_${selected}_index`)) || 0;
+                total = JLPTWords[selected].words.length || 1;
+            }
+
+            let percentage = parseFloat(((index / total) * 100).toFixed(2));
+            return percentage
+        },
+        
         async loadSound(url) {
             const res = await fetch(url);
             const arrayBuffer = await res.arrayBuffer();
@@ -127,20 +166,30 @@ new Vue({
         },
         exerciseTypeChange(e) {
             localStorage.setItem("exerciseTypeIndex", e);
+            this.input_word = "";
+            
             if (e === 0) {
                 this.generateRandomHiragana();
                 window.removeEventListener('keydown', this.handleWordInput)
                 window.addEventListener('keydown', this.handleRubyInput)
-            } else if (e === 1) {
-                this.currentKana = ''
-                window.removeEventListener('keydown', this.handleRubyInput)
-                window.addEventListener('keydown', this.handleWordInput)
+            } else {
+                this.currentKana = '';
+                window.removeEventListener('keydown', this.handleRubyInput);
+                window.removeEventListener('keydown', this.handleWordInput);
+                window.addEventListener('keydown', this.handleWordInput);
+
+                if (e === 1) {
+                    this.words_selected_item = localStorage.getItem("words_selected_item");
+                } else if (e === 2) {
+                    this.words_selected_item_length = katakanaWords.length
+                }
+                this.initWordData();
             }
         },
         wordsItemChange() {
             localStorage.setItem("words_selected_item", this.words_selected_item);
-            localStorage.setItem("words_selected_item_length", KanaWords[localStorage.getItem("words_selected_item")].words.length);
-            this.words = KanaWords[localStorage.getItem("words_selected_item")].words[parseInt(localStorage.getItem(`words_selected_${this.words_selected_item}_index`)) || 0]
+            localStorage.setItem("words_selected_item_length", JLPTWords[localStorage.getItem("words_selected_item")].words.length);
+            this.initWordData()
         },
         correctSoundChange() {
             this.playCorrectSound();
@@ -155,6 +204,12 @@ new Vue({
                 (cp >= 0x3040 && cp <= 0x309F) || // Hiragana
                 (cp >= 0x30A0 && cp <= 0x30FF) || // Katakana（含「ー」）
                 (cp >= 0x31F0 && cp <= 0x31FF)    // Katakana Phonetic Extensions
+            );
+        },
+        hiraganaToKatakana(str) {
+            if (!str) return '';
+            return str.replace(/[\u3041-\u3096]/g, ch =>
+                String.fromCharCode(ch.charCodeAt(0) + 0x60)
             );
         },
         handleWordInput(event) {
@@ -180,32 +235,49 @@ new Vue({
 
             // 許容される仮名を逐語的に追加する
             for (const ch of chunk) {
-                if (this.isKana(ch)) this.input_word += ch;
+                if (this.isKana(ch)) {
+                    let charToAdd = ch;
+                    if (this.exerciseTypeIndex === 2) {
+                        charToAdd = this.hiraganaToKatakana(ch);
+                    }
+                    this.input_word += charToAdd;  
+                }
             }
+            
             this.input_word = this.normalizeKana(this.input_word);
+            
             // 両辺を先に正規化してから比較する
-            const targetWord = this.normalizeKana(this.words.ruby || '');
-            const inputWord = this.normalizeKana(this.input_word);
-
+            let targetWord = this.hiraganaToKatakana(this.normalizeKana(this.words.ruby || ''));
+            let inputWord = this.hiraganaToKatakana(this.normalizeKana(this.input_word));
+            
             if (inputWord === targetWord) {
-                let words_selected_item = `words_selected_${this.words_selected_item}_index`
-                let words_selected_index = localStorage.getItem(words_selected_item)
-
                 this.playCorrectSound(); // 正確効果音を再生
                 this.input_word = "";
-                if (words_selected_index >= KanaWords[localStorage.getItem("words_selected_item")].words.length - 1) {
+
+                let indexKey, totalLength;
+                if (this.exerciseTypeIndex === 2) {
+                    indexKey = `words_selected_katakana_special_index`;
+                    totalLength = katakanaWords.length;
+                } else {
+                    const selected = this.words_selected_item;
+                    indexKey = `words_selected_${selected}_index`;
+                    totalLength = JLPTWords[selected]?.words.length || 0;
+                }
+
+                let currentIndex = parseInt(localStorage.getItem(indexKey)) || 0;
+                if (currentIndex >= totalLength - 1) {
                     this.$message({message: "終わり、お疲れ様でした!", type: "success", duration: 90000});
                     setTimeout(() => {
                         if (confirm("進度をリセットしますか？")) {
-                            this.words = KanaWords[localStorage.getItem("words_selected_item")].words[0]
-                            localStorage.setItem(`words_selected_${this.words_selected_item}_index`, 0);
+                            localStorage.setItem(indexKey, 0);
+                            this.initWordData();
                         }
                     }, 1000)
-                    return
+                } else {
+                    currentIndex++;
+                    localStorage.setItem(indexKey, currentIndex);
+                    this.initWordData()
                 }
-                words_selected_index++;
-                localStorage.setItem(`words_selected_${this.words_selected_item}_index`, words_selected_index);
-                this.words = KanaWords[localStorage.getItem("words_selected_item")].words[words_selected_index]
             } else {
                 // this.$message({message: this.input_word, type: "info"})
             }

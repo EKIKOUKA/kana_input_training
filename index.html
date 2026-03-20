@@ -93,11 +93,11 @@
 
             <div v-show="!largeMode" class="content">
                 <h2 v-if="exerciseTypeIndex === 0">現在の{{ kana_mode ? "片仮名" : "平仮名" }}: {{ currentKana }}</h2>
-                <el-progress v-if="exerciseTypeIndex === 1" :percentage="((localStorage.getItem(`words_selected_${words_selected_item}_index`) || 0) / KanaWords[localStorage.getItem('words_selected_item')].words.length * 100).toFixed(2)" :text-inside="true" :stroke-width="16" style="width: 500px;"></el-progress>
-                <h1 v-if="exerciseTypeIndex === 1">{{words.word}}</h1>
-                <p v-if="exerciseTypeIndex === 1" class="input_word">{{ input_word }}</p>
+                <el-progress v-if="exerciseTypeIndex === 1 || exerciseTypeIndex === 2" :percentage="calculatePercentage()" :text-inside="true" :stroke-width="16" style="width: 500px;"></el-progress>
+                <h1 v-if="exerciseTypeIndex === 1 || exerciseTypeIndex === 2">{{words.word}}</h1>
+                <p v-if="exerciseTypeIndex === 1 || exerciseTypeIndex === 2" class="input_word">{{ input_word }}</p>
                 <div v-if="exerciseTypeIndex === 1" class="ruby">{{words.ruby}}</div>
-                <div v-if="exerciseTypeIndex === 1" class="words-trans">{{words.trans}}</div>
+                <div v-if="words.trans && (exerciseTypeIndex === 1 || exerciseTypeIndex === 2)" class="words-trans">{{words.trans}}</div>
                 <transition name="fade1">
                     <div class="keyboard">
                         <div class="row">
