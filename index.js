@@ -86,7 +86,7 @@ new Vue({
             this.generateRandomHiragana();
             window.addEventListener('keydown', this.handleRubyInput)
         } else {
-            this.currentKana = '';
+            window.addEventListener('keydown', this.handleWordInput);
         }
         Object.keys(JLPTWords).forEach(item => {
             this.wordsArray.push({
