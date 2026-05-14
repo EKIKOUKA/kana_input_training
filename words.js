@@ -4005,7 +4005,7 @@ window.katakanaWords = [
     { word: "コンクリート", trans: "concrete" },
     { word: "コンサート", trans: "concert" },
     { word: "コンセント", trans: "concentric+plug" },
-    { word: "コンタクト[レンズ]", trans: "contact lens" },
+    { word: "コンタクトレンズ", trans: "contact lens" },
     { word: "コンテスト", trans: "contest" },
     { word: "コントラスト", trans: "contrast" },
     { word: "コントロール", trans: "control" },
